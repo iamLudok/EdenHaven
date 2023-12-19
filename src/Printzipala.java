@@ -60,7 +60,7 @@ public class Printzipala implements PropertyChangeListener
 	{
 		SwingUtilities.invokeLater(() -> 
 		{
-            loginFrame = new JFrame("Inicio de Sesión");
+            loginFrame = new JFrame("Inicio de SesiÃ³n");
             loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             loginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             loginFrame.setUndecorated(true);
@@ -88,12 +88,12 @@ public class Printzipala implements PropertyChangeListener
             loginPanel.add(nombreField, gbc);
 
             gbc.gridy++;
-            loginPanel.add(new JLabel("Contraseña:"), gbc);
+            loginPanel.add(new JLabel("ContraseÃ±a:"), gbc);
 
             gbc.gridy++;
             loginPanel.add(contrasenaField, gbc);
 
-            JButton loginButton = new JButton("Iniciar Sesión");
+            JButton loginButton = new JButton("Iniciar SesiÃ³n");
             loginButton.setActionCommand("SAIOAHASI");
             loginButton.addActionListener(kontrolatzailea);
             
