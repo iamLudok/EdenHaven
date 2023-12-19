@@ -45,7 +45,7 @@ public class Kontrolatzailea /*extends MouseAdapter*/ implements ActionListener
                 }
             } else
             {
-                //JOptionPane.showMessageDialog(null, "Autenticación fallida. Inténtalo de nuevo.");
+                //JOptionPane.showMessageDialog(null, "AutenticaciÃ³n fallida. IntÃ©ntalo de nuevo.");
             }
 	    } 
 	    else if (("HUECO".equals(e.getActionCommand())) || (("HUECO2".equals(e.getActionCommand()))) || (("HUECO3".equals(e.getActionCommand()))))
