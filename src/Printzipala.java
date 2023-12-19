@@ -1,7 +1,8 @@
-package proiektua_2;
+package src;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -12,6 +13,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,6 +50,10 @@ public class Printzipala implements PropertyChangeListener
     String opcion;
     JFrame opcionesFrame;
     JButton originalButton;
+    
+    JButton backButton;
+    
+    JFrame frame;
 	
 	public Printzipala(Modeloa modeloa, Kontrolatzailea kontrolatzailea)
 	{
@@ -57,7 +67,7 @@ public class Printzipala implements PropertyChangeListener
 	{
 		SwingUtilities.invokeLater(() -> 
 		{
-            loginFrame = new JFrame("Inicio de SesiÃ³n");
+            loginFrame = new JFrame("Inicio de Sesión");
             loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             loginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             loginFrame.setUndecorated(true);
@@ -85,12 +95,12 @@ public class Printzipala implements PropertyChangeListener
             loginPanel.add(nombreField, gbc);
 
             gbc.gridy++;
-            loginPanel.add(new JLabel("ContraseÃ±a:"), gbc);
+            loginPanel.add(new JLabel("Contraseña:"), gbc);
 
             gbc.gridy++;
             loginPanel.add(contrasenaField, gbc);
 
-            JButton loginButton = new JButton("Iniciar SesiÃ³n");
+            JButton loginButton = new JButton("Iniciar Sesión");
             loginButton.setActionCommand("SAIOAHASI");
             loginButton.addActionListener(kontrolatzailea);
             
@@ -198,35 +208,48 @@ public class Printzipala implements PropertyChangeListener
     }
     */
     
-	void mostrarPantallaHuecos() 
-	{
-        JFrame frame = new JFrame("Programa Swing");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(true);
+	void mostrarPantallaHuecos() {
+	    frame = new JFrame("Programa Swing");
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+	    frame.setUndecorated(true);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(1, 3));
+	    JPanel panel = new JPanel(new BorderLayout());
 
+	    // Panel para los botones de huecos
+	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
 
-        	button = new JButton("Hueco " + 1);
-        	button.setActionCommand("HUECO");
-        	button.addActionListener(kontrolatzailea);
-            panel.add(button);
-        
-        	button2 = new JButton("Hueco " + 2);
-        	button2.setActionCommand("HUECO2");
-        	button2.addActionListener(kontrolatzailea);
-            panel.add(button2);
-            
-            button3 = new JButton("Hueco " + 3);
-            button3.setActionCommand("HUECO3");
-            button3.addActionListener(kontrolatzailea);
-            panel.add(button3);
+	    button = new JButton("Hueco " + 1);
+	    button.setActionCommand("HUECO");
+	    button.addActionListener(kontrolatzailea);
+	    botonesHuecosPanel.add(button);
 
-        frame.getContentPane().add(panel);
-        frame.setVisible(true);
-    }
+	    button2 = new JButton("Hueco " + 2);
+	    button2.setActionCommand("HUECO2");
+	    button2.addActionListener(kontrolatzailea);
+	    botonesHuecosPanel.add(button2);
+
+	    button3 = new JButton("Hueco " + 3);
+	    button3.setActionCommand("HUECO3");
+	    button3.addActionListener(kontrolatzailea);
+	    botonesHuecosPanel.add(button3);
+
+	    // Panel para el botón "Atrás"
+	    JPanel botonAtrasPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+	    backButton = new JButton("Atrás");
+	    backButton.setActionCommand("ATRAS");
+	    backButton.addActionListener(kontrolatzailea);
+	    backButton.setPreferredSize(new Dimension(80, 30)); // Cambiar el tamaño
+	    botonAtrasPanel.add(backButton);
+
+	    // Añadir los paneles al panel principal
+	    panel.add(botonAtrasPanel, BorderLayout.NORTH);
+	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
+
+	    frame.getContentPane().add(panel);
+	    frame.setVisible(true);
+	}
 	
 	void mostrarOpciones()
 	{
@@ -260,24 +283,18 @@ public class Printzipala implements PropertyChangeListener
 	
 	private void argazkiaSartu(String argazkia, int lekua) 
 	{
-		switch(lekua) 
-		{
-			case 1:
-			{
-				irudiaJarri(argazkia,button,"POZO");
-				break;
-			}
-			case 2:
-			{
-				irudiaJarri(argazkia,button2,"ESTUFA");
-				break;
-			}
-			case 3:
-			{
-				irudiaJarri(argazkia,button3,"VENTILADOR");
-				break;
-			}
-		}
+	    switch (lekua) 
+	    {
+	        case 1:
+	            irudiaJarri(argazkia, button, "POZO");
+	            break;
+	        case 2:
+	            irudiaJarri(argazkia, button2, "ESTUFA");
+	            break;
+	        case 3:
+	            irudiaJarri(argazkia, button3, "VENTILADOR");
+	            break;
+	    }
 	}
 	
 	void irudiaJarri(String argazkia, JButton botoia, String izena)
@@ -320,6 +337,7 @@ public class Printzipala implements PropertyChangeListener
 	{
 		String nombre = nombreField.getText();
         String contrasena = new String(contrasenaField.getPassword());
+        
 		if (modeloa.autenticar(nombre, contrasena)) 
 		{
             //Login pantaila itxi
@@ -348,7 +366,7 @@ public class Printzipala implements PropertyChangeListener
         } 
 		else
         {
-            JOptionPane.showMessageDialog(null, "AutenticaciÃ³n fallida. IntÃ©ntalo de nuevo.");
+            JOptionPane.showMessageDialog(null, "Autenticación fallida. Inténtalo de nuevo.");
         }
 	}
 	

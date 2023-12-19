@@ -1,4 +1,4 @@
-package proiektua_2;
+package src;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,6 +50,11 @@ public class Kontrolatzailea implements ActionListener
 	    	}
 	    	irudia.mostrarOpciones();
 	    } 
+	    else if ("ATRAS".equals(e.getActionCommand())) 
+	    {
+	    	irudia.frame.dispose();
+	        irudia.mostrarVentanaLogin();
+	    }
 	    else if ("POZO".equals(e.getActionCommand())) 
 	    {
 	    	modeloa.bota("pozo", pos);
