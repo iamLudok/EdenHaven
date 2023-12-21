@@ -9,14 +9,12 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -31,50 +29,104 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-
 public class Printzipala implements PropertyChangeListener
 {
-	Modeloa modeloa;
-	Kontrolatzailea kontrolatzailea;
+	Modeloa modeloa; //MODELOA
+	Kontrolatzailea kontrolatzailea; //KONTROLATZAILEA
 	
-	JFrame loginFrame;
-	JTextField nombreField;
-	JPasswordField contrasenaField;
-	JPanel loginPanel;
+	//PANTAILAK
+	JFrame ordenagailuarenPANTAILA; //REBISATU
+	JFrame loginPANTAILA;	
+	JFrame mainPANTAILA;
+	JFrame aukerenPANTAILA;
 	
-	JFrame mainFrame;
-    JButton button;
-    JButton button2;
-    JButton button3;
-    
-    String opcion;
-    JFrame opcionesFrame;
-    JButton originalButton;
-    
-    JButton backButton;
-    
-    JFrame frame;
+	//JFIELD
+	JTextField izenaField;
+	JPasswordField pasahitzaField;
 	
-	public Printzipala(Modeloa modeloa, Kontrolatzailea kontrolatzailea)
+	//BOTOIAK
+    JButton button; //EZKERREKO BOTOIA
+    JButton button2; //ERDIKO BOTOIA
+    JButton button3; //ESKUINEKO BOTOIA
+    JButton backButton; //ATZERA JOATEKO BOTOIA
+    
+    //COLLECTIONS
+    private Map<String, Erabiltzailea> erabiltzaileak; //ERABILTZAILEEN MAPA
+     
+    //INT
+    //int behin=0;
+           	
+	public Printzipala(Modeloa modeloa, Kontrolatzailea kontrolatzailea) //PRINTZIPALAREN KONSTRUKTOREA
 	{
-		originalButton = new JButton();
-		this.modeloa = modeloa;
-		this.kontrolatzailea = kontrolatzailea;
-		this.modeloa.addPropertyChangeListener(this);
+		this.modeloa = modeloa; //MODELOA
+		this.kontrolatzailea = kontrolatzailea; //KONTROLATZAILEA
+		this.modeloa.addPropertyChangeListener(this); //PROPERTY CHANGE
+		
+		erabiltzaileak = new HashMap<>(); //ERABILTZAILEEN HASH MAPA
+		
+		erabiltzaileakIrakurri(); //ERABILTZAILEEN FITXATEGIA IRAKURRI ETA ERABILTZAILEAK SORTU
 	}
 	
-	void mostrarVentanaLogin() 
+	private void erabiltzaileakIrakurri() //ERABILTZAILEEN FITXATEGIA IRAKURRI ETA ERABILTZAILEAK SORTU
+	{
+	    try (BufferedReader br = new BufferedReader(new FileReader("erabiltzaileak.txt"))) 
+	    {
+	        String linea;
+	        while ((linea = br.readLine()) != null) 
+	        {
+	            String[] partes = linea.split(":");
+	            if (partes.length >= 2) 
+	            {
+	                String nombre = partes[0].trim();
+	                String contrasena = partes[1].trim();
+
+	                Erabiltzailea erabiltzailea = new Erabiltzailea();
+	                erabiltzailea.setPasahitza(contrasena);
+	                erabiltzaileak.put(nombre, erabiltzailea);
+	            }
+	        }
+	    } 
+	    catch (IOException e) 
+	    {
+	        e.printStackTrace();
+	    }
+	}
+
+	
+	private Erabiltzailea getErabiltzailea(String nombre) 
+	{
+	    return erabiltzaileak.get(nombre);
+	}
+	
+	private boolean isUsuarioRegistrado(String nombre) 
+	{
+	    return erabiltzaileak.containsKey(nombre);
+	}
+	
+	private boolean isUsuarioContraseña(String nombre, String contrasena) 
+	{
+	    Erabiltzailea erabiltzailea = getErabiltzailea(nombre);
+
+	    if (erabiltzailea != null) 
+	    {
+	        return contrasena.equals(erabiltzailea.getPasahitza());
+	    }
+
+	    return false;
+	}
+	
+	void loginPantailaErakutzi() 
 	{
 		SwingUtilities.invokeLater(() -> 
 		{
-            loginFrame = new JFrame("Inicio de Sesión");
-            loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            loginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            loginFrame.setUndecorated(true);
+            loginPANTAILA = new JFrame("Inicio de Sesiï¿½n");
+            loginPANTAILA.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            loginPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            loginPANTAILA.setUndecorated(true);
             
             kontrolatzailea.setIrudia(this);
             
-            loginPanel = new JPanel(new GridBagLayout());
+            JPanel loginPanel = new JPanel(new GridBagLayout());
 
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
@@ -82,33 +134,33 @@ public class Printzipala implements PropertyChangeListener
             gbc.gridwidth = 2;
             gbc.insets = new Insets(10, 10, 10, 10);
 
-            loginFrame.setLayout(new BorderLayout());
-            loginFrame.add(loginPanel, BorderLayout.CENTER);
+            loginPANTAILA.setLayout(new BorderLayout());
+            loginPANTAILA.add(loginPanel, BorderLayout.CENTER);
 
             //Izena eta pasahitza
-            nombreField = new JTextField(20);
-            contrasenaField = new JPasswordField(20);
+            izenaField = new JTextField(20);
+            pasahitzaField = new JPasswordField(20);
 
-            loginPanel.add(new JLabel("Nombre:"), gbc);
-
-            gbc.gridy++;
-            loginPanel.add(nombreField, gbc);
+            loginPanel.add(new JLabel("Izena:"), gbc);
 
             gbc.gridy++;
-            loginPanel.add(new JLabel("Contraseña:"), gbc);
+            loginPanel.add(izenaField, gbc);
 
             gbc.gridy++;
-            loginPanel.add(contrasenaField, gbc);
+            loginPanel.add(new JLabel("Pasahitza:"), gbc);
 
-            JButton loginButton = new JButton("Iniciar Sesión");
+            gbc.gridy++;
+            loginPanel.add(pasahitzaField, gbc);
+
+            JButton loginButton = new JButton("HASI SAIOA");
             loginButton.setActionCommand("SAIOAHASI");
             loginButton.addActionListener(kontrolatzailea);
             
             gbc.gridy++;
             gbc.gridwidth = 2;
             loginPanel.add(loginButton, gbc);
-            loginFrame.getContentPane().add(loginPanel);
-            loginFrame.setVisible(true);
+            loginPANTAILA.getContentPane().add(loginPanel);
+            loginPANTAILA.setVisible(true);
 		});
 	}
 	
@@ -205,21 +257,20 @@ public class Printzipala implements PropertyChangeListener
                 mostrarPantallaHuecos();
             }
         }
-    }
-    */
-    
-	void mostrarPantallaHuecos() {
-	    frame = new JFrame("Programa Swing");
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-	    frame.setUndecorated(true);
+    }*/
+        
+	void mostrarPantallaHuecos()
+	{
+	    mainPANTAILA = new JFrame("PANTAILA PRINTZIPALA");
+	    mainPANTAILA.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    mainPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH);
+	    mainPANTAILA.setUndecorated(true);
 
 	    JPanel panel = new JPanel(new BorderLayout());
 
-	    // Panel para los botones de huecos
 	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
 
-	    button = new JButton("Hueco " + 1);
+	    button = new JButton("Hutsunea " + 1);
 	    button.setActionCommand("HUECO");
 	    button.addActionListener(kontrolatzailea);
 	    botonesHuecosPanel.add(button);
@@ -234,152 +285,221 @@ public class Printzipala implements PropertyChangeListener
 	    button3.addActionListener(kontrolatzailea);
 	    botonesHuecosPanel.add(button3);
 
-	    // Panel para el botón "Atrás"
 	    JPanel botonAtrasPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-	    backButton = new JButton("Atrás");
+	    backButton = new JButton("ATZERA");
 	    backButton.setActionCommand("ATRAS");
 	    backButton.addActionListener(kontrolatzailea);
-	    backButton.setPreferredSize(new Dimension(80, 30)); // Cambiar el tamaño
+	    backButton.setPreferredSize(new Dimension(80, 30)); 
 	    botonAtrasPanel.add(backButton);
 
-	    // Añadir los paneles al panel principal
 	    panel.add(botonAtrasPanel, BorderLayout.NORTH);
 	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
 
-	    frame.getContentPane().add(panel);
-	    frame.setVisible(true);
+	    mainPANTAILA.getContentPane().add(panel);
+	    mainPANTAILA.setVisible(true);
 	}
 	
 	void mostrarOpciones()
 	{
-		opcionesFrame = new JFrame("Opciones");
-        opcionesFrame.setSize(300, 150);
-        opcionesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		aukerenPANTAILA = new JFrame("AUKERAK");
+        aukerenPANTAILA.setSize(300, 150);
+        aukerenPANTAILA.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel opcionesPanel = new JPanel();
         opcionesPanel.setLayout(new GridLayout(4, 1));
 
-        JButton pozoButton = new JButton("POZO");
+        JButton pozoButton = new JButton("PUTZUA");
         pozoButton.setActionCommand("POZO");
         pozoButton.addActionListener(kontrolatzailea);
         opcionesPanel.add(pozoButton);
 
-        JButton ventiladorButton = new JButton("VENTILADOR");
+        JButton ventiladorButton = new JButton("HAIZEGAILUA");
         ventiladorButton.setActionCommand("VENTILADOR");
         ventiladorButton.addActionListener(kontrolatzailea);
         opcionesPanel.add(ventiladorButton);
 
-        JButton fugaButton = new JButton("ESTUFA");
+        JButton fugaButton = new JButton("BEROGAILUA");
         fugaButton.setActionCommand("ESTUFA");
         fugaButton.addActionListener(kontrolatzailea);
         opcionesPanel.add(fugaButton);
 
-        opcionesFrame.getContentPane().add(opcionesPanel);
+        aukerenPANTAILA.getContentPane().add(opcionesPanel);
 
-        opcionesFrame.setLocationRelativeTo(mainFrame);
-        opcionesFrame.setVisible(true);
+        aukerenPANTAILA.setLocationRelativeTo(ordenagailuarenPANTAILA);
+        aukerenPANTAILA.setVisible(true);
 	}
 	
 	private void argazkiaSartu(String argazkia, int lekua) 
 	{
-	    switch (lekua) 
+	    String nombre = izenaField.getText();
+	    Erabiltzailea usuario = getErabiltzailea(nombre);
+
+	    if (usuario != null) 
 	    {
-	        case 1:
-	            irudiaJarri(argazkia, button, "POZO");
-	            break;
-	        case 2:
-	            irudiaJarri(argazkia, button2, "ESTUFA");
-	            break;
-	        case 3:
-	            irudiaJarri(argazkia, button3, "VENTILADOR");
-	            break;
+	        switch (lekua) 
+	        {
+	            case 1:
+	                irudiaJarri(argazkia, button);
+	                usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 1);
+	                System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
+	                break;
+
+	            case 2:
+	                irudiaJarri(argazkia, button2);
+	                usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 2);
+	                System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
+	                break;
+
+	            case 3:
+	                irudiaJarri(argazkia, button3);
+	                usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 3);
+	                System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
+	                break;
+	        }
 	    }
 	}
 	
-	void irudiaJarri(String argazkia, JButton botoia, String izena)
+	void irudiaJarri(String argazkia, JButton botoia)
 	{
-		botoia.setIcon(new ImageIcon("ikonoak/"+argazkia+".png"));
-		botoia.setText(izena);
+		int hostelWidth = 200;
+        int hostelHeight = 200;
+
+        ImageIcon icon = new ImageIcon("ikonoak/" + argazkia + ".png");
+        Image scaledImage = icon.getImage().getScaledInstance(hostelWidth, hostelHeight, Image.SCALE_SMOOTH);
+
+        botoia.setIcon(new ImageIcon(scaledImage));
+        botoia.setText(argazkia.toUpperCase());
 		botoia.setHorizontalTextPosition(SwingConstants.CENTER);
 		botoia.setVerticalTextPosition(SwingConstants.BOTTOM);
-        
-        opcionesFrame.dispose();
+
+        aukerenPANTAILA.dispose();
 	}
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent e) 
 	{
-		String propietatea = e.getPropertyName();
-		int lekua = (int) e.getNewValue();
-	
-		switch (propietatea) 
-		{
-			case Modeloa.PROPIETATEA:
-			{
-				argazkiaSartu(Modeloa.PROPIETATEA, lekua);				
-				break;
-			}
-			case Modeloa.PROPIETATEA2:
-			{
-				argazkiaSartu(Modeloa.PROPIETATEA2, lekua);				
-				break;
-			}
-			case Modeloa.PROPIETATEA3:
-			{
-				argazkiaSartu(Modeloa.PROPIETATEA3, lekua);				
-				break;
-			}
-		}
+	    String propiedad = e.getPropertyName();
+	    int lekua = (int) e.getNewValue();
+
+	    String nombre = izenaField.getText();
+
+	    Erabiltzailea erabiltzailea = getErabiltzailea(nombre);
+
+	    if (erabiltzailea != null) 
+	    {
+	        switch (propiedad) 
+	        {
+	            case Modeloa.PROPIETATEA:
+	                argazkiaSartu(Modeloa.PROPIETATEA, lekua);
+	                erabiltzailea.setBalioZerrendaAtIndex(erabiltzailea.getBalioZerrenda().size(), "pozo");
+	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                erabiltzailea.behin = 1;  
+	                break;
+
+	            case Modeloa.PROPIETATEA2:
+	                argazkiaSartu(Modeloa.PROPIETATEA2, lekua);
+	                erabiltzailea.setBalioZerrendaAtIndex(erabiltzailea.getBalioZerrenda().size(), "ventilador");
+	                System.out.println(nombre + " balioa " + erabiltzailea.getBalioZerrenda());
+	                erabiltzailea.behin = 1;  
+	                break;
+
+	            case Modeloa.PROPIETATEA3:
+	                argazkiaSartu(Modeloa.PROPIETATEA3, lekua);
+	                erabiltzailea.setBalioZerrendaAtIndex(erabiltzailea.getBalioZerrenda().size(), "estufa");
+	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                erabiltzailea.behin = 1;  
+	                break;
+	        }
+	    }
 	}
 	
 	void autenticarUsuario() 
 	{
-		String nombre = nombreField.getText();
-        String contrasena = new String(contrasenaField.getPassword());
+		String nombre = izenaField.getText();
+        String contrasena = new String(pasahitzaField.getPassword());        
         
 		if (modeloa.autenticar(nombre, contrasena)) 
 		{
-            //Login pantaila itxi
-			loginFrame.dispose();
+			loginPANTAILA.dispose(); //Login pantaila itxi
 
             if ("admin".equals(nombre)) 
             {
-                //irudia.mostrarPantallaAdmin();
+                //mostrarPantallaAdmin();
             } 
-            else if ("islandia".equals(nombre)) 
-            {
-                mostrarPantallaHuecos();
-            } 
-            else if ("groenlandia".equals(nombre)) 
-            {
-                mostrarPantallaHuecos();
-            } 
-            else if ("Ludok".equals(nombre) && "anji".equals(contrasena)) 
+            else if ((isUsuarioRegistrado(nombre)) && (isUsuarioContraseña(nombre,contrasena)))
+            {           	
+            	Erabiltzailea erabiltzailea = getErabiltzailea(nombre);   
+            	if(erabiltzailea.behin==0)
+            	{          		                
+            		mostrarPantallaHuecos();
+            	}
+            	else
+            	{
+            		mostrarPantallaHuecosCompletado(erabiltzailea);
+            	}
+            }         
+            else if ("Ludok".equals(nombre) && "dj".equals(contrasena)) 
             {
                 ludokLovesU();
             }
             else 
             {
-                JOptionPane.showMessageDialog(null, "Usuario no reconocido");
+                JOptionPane.showMessageDialog(null, "Erabiltzaile hau ez da existitzen.");
             }
         } 
 		else
         {
-            JOptionPane.showMessageDialog(null, "Autenticación fallida. Inténtalo de nuevo.");
+            JOptionPane.showMessageDialog(null, "Akatz bat gertatu da. Saiatu berriz.");
         }
 	}
 	
-	void ludokLovesU()
+	private void mostrarPantallaHuecosCompletado(Erabiltzailea erabiltzailea) 
 	{
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	    mainPANTAILA = new JFrame("PANTAILA PRINTZIPALA");
+	    mainPANTAILA.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    mainPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH);
+	    mainPANTAILA.setUndecorated(true);
 
-        ImageIcon ludok = new ImageIcon("ludok/arkitektura.jpg");
-        JLabel lludok = new JLabel(ludok);
-        lludok.setBounds(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+	    JPanel panel = new JPanel(new BorderLayout());
+
+	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
+
+	    for (int i = 0; i < erabiltzailea.getBalioZerrenda().size(); i++) {
+	        JButton button = new JButton("Hutsunea " + (i + 1));
+	        button.addActionListener(kontrolatzailea);
+	        botonesHuecosPanel.add(button);
+
+	        String balio = erabiltzailea.getBalioZerrenda().get(i).toLowerCase();
+	        irudiaJarri(balio, button);
+	    }
+
+	    JPanel botonAtrasPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+	    backButton = new JButton("ATZERA");
+	    backButton.setActionCommand("ATRAS");
+	    backButton.addActionListener(kontrolatzailea);
+	    backButton.setPreferredSize(new Dimension(80, 30)); 
+	    botonAtrasPanel.add(backButton);
+
+	    panel.add(botonAtrasPanel, BorderLayout.NORTH);
+	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
+
+	    mainPANTAILA.getContentPane().add(panel);
+	    mainPANTAILA.setVisible(true);
+	}
+	
+	void ludokLovesU() //EASTER EGG
+	{
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //Pantaila tamaina hartu 
+		//(Argazkiaren tamaina baino haundiagoa baldin bada ez da gehiago haundituko)
+
+        ImageIcon ludok = new ImageIcon("ludok/arkitektura.jpg"); //ARGAZKIA
+        JLabel lludok = new JLabel(ludok); //ARGAZKIA JARTZEKO LABEL-A
+        lludok.setBounds(0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight()); 
         JLayeredPane ludokdPane = new JLayeredPane();
         ludokdPane.add(lludok);
-        JFrame ludokFrame = new JFrame("Pantalla de Ludok");
+        JFrame ludokFrame = new JFrame("DJ LUDOK");
 		 ludokFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 ludokFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		 ludokFrame.setUndecorated(true);
@@ -390,9 +510,9 @@ public class Printzipala implements PropertyChangeListener
 	
 	public static void main(String[] args) 
 	{
-		Modeloa modeloa = new Modeloa ();
-		Kontrolatzailea kontrolatzailea = new Kontrolatzailea(modeloa);
-		Printzipala main = new Printzipala(modeloa,kontrolatzailea);
-		main.mostrarVentanaLogin();
+		Modeloa modeloa = new Modeloa (); //MODELOA
+		Kontrolatzailea kontrolatzailea = new Kontrolatzailea(modeloa); //KONTROLATZAILEA
+		Printzipala main = new Printzipala(modeloa,kontrolatzailea); //MAIN
+		main.loginPantailaErakutzi(); //HASIERAKO FUNTZIOA
 	}
 }

@@ -52,12 +52,12 @@ public class Kontrolatzailea implements ActionListener
 	    } 
 	    else if ("ATRAS".equals(e.getActionCommand())) 
 	    {
-	    	irudia.frame.dispose();
-	        irudia.mostrarVentanaLogin();
+	    	irudia.mainPANTAILA.dispose();
+	        irudia.loginPantailaErakutzi();
 	    }
 	    else if ("POZO".equals(e.getActionCommand())) 
-	    {
-	    	modeloa.bota("pozo", pos);
+	    {	    	
+	    	modeloa.bota("pozo", pos);	    	
 	    } 
 	    else if ("VENTILADOR".equals(e.getActionCommand())) 
 	    {
