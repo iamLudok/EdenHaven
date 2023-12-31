@@ -73,6 +73,10 @@ public class Kontrolatzailea implements ActionListener
 	    	irudia.mainPANTAILA.dispose();
 	        irudia.mostrarPantallaHuecosCompletado(erabiltzailea);
 	    }
+	    else if ("EZABATU".equals(e.getActionCommand())) 
+	    {
+	    	irudia.mostrarOpcionesEliminar();
+	    }
 	    else if ("POZO".equals(e.getActionCommand())) 
 	    {	    	
 	    	modeloa.bota("pozo", pos);	    	
@@ -84,6 +88,18 @@ public class Kontrolatzailea implements ActionListener
 	    else if ("ESTUFA".equals(e.getActionCommand())) 
 	    {
 	    	modeloa.bota("estufa", pos);
+	    }
+	    else if ("EZKERREKOA".equals(e.getActionCommand())) 
+	    {	    	
+	    	modeloa.bota("ezk", pos);	    	
+	    } 
+	    else if ("ERDIKOA".equals(e.getActionCommand())) 
+	    {
+	    	modeloa.bota("erd", pos);
+	    } 
+	    else if ("ESKUINEKOA".equals(e.getActionCommand())) 
+	    {
+	    	modeloa.bota("esk", pos);
 	    }
 	}
 }

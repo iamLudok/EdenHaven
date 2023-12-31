@@ -60,12 +60,14 @@ public class Printzipala implements PropertyChangeListener
     JButton button3; //ESKUINEKO BOTOIA
     JButton backButton; //ATZERA JOATEKO BOTOIA
     JButton editButton;
+    JButton deleteButton;
     
     //COLLECTIONS
     private Map<String, Erabiltzailea> erabiltzaileak; //ERABILTZAILEEN MAPA
      
    
     //INT
+    int posizioa=0;
     //int behin=0;
     Mqtt mqtt;
     public static final String BROKER = "tcp://localhost:1883";
@@ -115,9 +117,9 @@ public class Printzipala implements PropertyChangeListener
 	{
 		if (mqtt != null) 
 		{
-			button.setText(String.valueOf(mqtt.valueTemperature)/*argazkia.toUpperCase()*/);
-	        button2.setText(String.valueOf(mqtt.valueTemperature)/*argazkia.toUpperCase()*/);
-	        button3.setText(String.valueOf(mqtt.valueTemperature)/*argazkia.toUpperCase()*/);
+			button.setText(String.valueOf(mqtt.valueTemperature));
+	        button2.setText(String.valueOf(mqtt.valueTemperature));
+	        button3.setText(String.valueOf(mqtt.valueTemperature));
 		} else 
 		{
 		    System.out.println("MQTT es null");
@@ -336,6 +338,12 @@ public class Printzipala implements PropertyChangeListener
 	    editButton.addActionListener(kontrolatzailea);
 	    editButton.setPreferredSize(new Dimension(130, 30)); 
 	    botonAtrasPanel.add(editButton);
+	    
+	    deleteButton = new JButton("EZABATU");
+	    deleteButton.setActionCommand("EZABATU");
+	    deleteButton.addActionListener(kontrolatzailea);
+	    deleteButton.setPreferredSize(new Dimension(130, 30)); 
+	    botonAtrasPanel.add(deleteButton);
 
 	    panel.add(botonAtrasPanel, BorderLayout.NORTH);
 	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
@@ -357,28 +365,114 @@ public class Printzipala implements PropertyChangeListener
 	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
 	    
 	    for (i = 0; i < erabiltzailea.getBalioZerrenda().size(); i++) {
+	        String currentValue = erabiltzailea.getBalioZerrenda().get(i);
+
+	        // Verificar si el valor es null antes de procesarlo
+	        if (currentValue != null) {
+	            JButton button = new JButton("Hutsunea " + (i + 1));
+	            button.addActionListener(kontrolatzailea);
+	            botonesHuecosPanel.add(button);
+
+	            String balio = String.valueOf(currentValue).toLowerCase();
+	            irudiaJarri(balio, button);
+	        } else {
+	        	if(i==1) 
+	    	    {
+	    	    	button2 = new JButton("Hueco " + 2);
+	    		    button2.setActionCommand("HUECO2");
+	    		    button2.addActionListener(kontrolatzailea);
+	    		    botonesHuecosPanel.add(button2);
+	    	    }
+	        	else if(i==2)
+	    	    {
+	    	    	button3 = new JButton("Hueco " + 3);
+	    		    button3.setActionCommand("HUECO3");
+	    		    button3.addActionListener(kontrolatzailea);
+	    		    botonesHuecosPanel.add(button3);
+	    	    }
+	        	else
+	        	{
+	        		System.out.println("Error: El valor en la posición " + i + " es null.");
+	        		button = new JButton("Hueco " + 1);
+	        		button.setActionCommand("HUECO");
+	        		button.addActionListener(kontrolatzailea);
+	        		botonesHuecosPanel.add(button);
+	        	}
+	        }
+	    }
+
+	    /*for (i = 0; i < erabiltzailea.getBalioZerrenda().size(); i++) {
+	    	
 	        JButton button = new JButton("Hutsunea " + (i + 1));
 	        button.addActionListener(kontrolatzailea);
 	        botonesHuecosPanel.add(button);
 
 	        String balio = erabiltzailea.getBalioZerrenda().get(i).toLowerCase();
 	        irudiaJarri(balio, button);
-	    }
-	    if(i==1) 
-	    {
-	    	button2 = new JButton("Hueco " + 2);
-		    button2.setActionCommand("HUECO2");
-		    button2.addActionListener(kontrolatzailea);
-		    botonesHuecosPanel.add(button2);
-	    }
-	    if(i<=2)
-	    {
-	    	button3 = new JButton("Hueco " + 3);
-		    button3.setActionCommand("HUECO3");
-		    button3.addActionListener(kontrolatzailea);
-		    botonesHuecosPanel.add(button3);
-	    }
+	    }*/
+
 	    
+	    
+	    
+	    JPanel botonAtrasPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+	    backButton = new JButton("ATZERA");
+	    backButton.setActionCommand("ATRAS");
+	    backButton.addActionListener(kontrolatzailea);
+	    backButton.setPreferredSize(new Dimension(80, 30)); 
+	    botonAtrasPanel.add(backButton);
+
+	    editButton = new JButton("EDITATU");
+	    editButton.setActionCommand("EDITATU");
+	    editButton.addActionListener(kontrolatzailea);
+	    editButton.setPreferredSize(new Dimension(130, 30)); 
+	    botonAtrasPanel.add(editButton);
+	    
+	    editButton = new JButton("KONFIRMATU");
+	    editButton.setActionCommand("KONFIRMATU");
+	    editButton.addActionListener(kontrolatzailea);
+	    editButton.setPreferredSize(new Dimension(130, 30)); 
+	    botonAtrasPanel.add(editButton);
+	    
+	    deleteButton = new JButton("EZABATU");
+	    deleteButton.setActionCommand("EZABATU");
+	    deleteButton.addActionListener(kontrolatzailea);
+	    deleteButton.setPreferredSize(new Dimension(130, 30)); 
+	    botonAtrasPanel.add(deleteButton);
+
+	    panel.add(botonAtrasPanel, BorderLayout.NORTH);
+	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
+
+	    mainPANTAILA.getContentPane().add(panel);
+	    mainPANTAILA.setVisible(true);
+	}
+	
+	/*public void mostrarPantallaEliminarHuecos()
+	{
+	    mainPANTAILA = new JFrame("PANTAILA PRINTZIPALA");
+	    mainPANTAILA.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    mainPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH);
+	    mainPANTAILA.setUndecorated(true);
+
+	    JPanel panel = new JPanel(new BorderLayout());
+
+	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
+
+	    button = new JButton("Hutsunea " + 1);
+	    button.setActionCommand("HUECO");
+	    button.addActionListener(kontrolatzailea);
+	    botonesHuecosPanel.add(button);
+
+	    button2 = new JButton("Hueco " + 2);
+	    button2.setActionCommand("HUECO2");
+	    button2.addActionListener(kontrolatzailea);
+	    botonesHuecosPanel.add(button2);
+
+	    button3 = new JButton("Hueco " + 3);
+	    button3.setActionCommand("HUECO3");
+	    button3.addActionListener(kontrolatzailea);
+	    botonesHuecosPanel.add(button3);
+
 	    JPanel botonAtrasPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 	    backButton = new JButton("ATZERA");
@@ -404,6 +498,36 @@ public class Printzipala implements PropertyChangeListener
 
 	    mainPANTAILA.getContentPane().add(panel);
 	    mainPANTAILA.setVisible(true);
+	}*/
+	
+	public void mostrarOpcionesEliminar()
+	{
+		aukerenPANTAILA = new JFrame("ZEIN NAHI DUZU EZABATU");
+        aukerenPANTAILA.setSize(300, 150);
+        aukerenPANTAILA.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel opcionesPanel = new JPanel();
+        opcionesPanel.setLayout(new GridLayout(4, 1));
+
+        JButton pozoButton = new JButton("EZKERREKOA");
+        pozoButton.setActionCommand("EZKERREKOA");
+        pozoButton.addActionListener(kontrolatzailea);
+        opcionesPanel.add(pozoButton);
+
+        JButton ventiladorButton = new JButton("ERDIKOA");
+        ventiladorButton.setActionCommand("ERDIKOA");
+        ventiladorButton.addActionListener(kontrolatzailea);
+        opcionesPanel.add(ventiladorButton);
+
+        JButton fugaButton = new JButton("ESKUINEKOA");
+        fugaButton.setActionCommand("ESKUINEKOA");
+        fugaButton.addActionListener(kontrolatzailea);
+        opcionesPanel.add(fugaButton);
+
+        aukerenPANTAILA.getContentPane().add(opcionesPanel);
+
+        aukerenPANTAILA.setLocationRelativeTo(ordenagailuarenPANTAILA);
+        aukerenPANTAILA.setVisible(true);
 	}
 	
 	public void mostrarOpciones()
@@ -447,20 +571,23 @@ public class Printzipala implements PropertyChangeListener
 	        {
 	            case 1:	      
 	                irudiaJarri(argazkia, button);
-	                usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 1);
-	                System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
+	                posizioa=0;
+	                //usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 1);
+	                //System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
 	                break;
 
 	            case 2:
 	                irudiaJarri(argazkia, button2);
-	                usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 2);
-	                System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
+	                posizioa=1;
+	                //usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 2);
+	                //System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
 	                break;
 
 	            case 3:
 	                irudiaJarri(argazkia, button3);
-	                usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 3);
-	                System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
+	                posizioa=2;
+	                //usuario.setPosizioZerrendaAtIndex(usuario.getPosizioZerrenda().size(), 3);
+	                //System.out.println(nombre + " posizioa: " + usuario.getPosizioZerrenda());
 	                break;
 	        }
 	    }
@@ -498,21 +625,21 @@ public class Printzipala implements PropertyChangeListener
 	        {
 	            case Modeloa.PROPIETATEA:
 	                argazkiaSartu(Modeloa.PROPIETATEA, lekua);
-	                erabiltzailea.setBalioZerrendaAtIndex(erabiltzailea.getBalioZerrenda().size(), "pozo");
+	                erabiltzailea.setBalioZerrendaAtIndex(posizioa, "pozo");
 	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                erabiltzailea.behin = 1;  
 	                break;
 
 	            case Modeloa.PROPIETATEA2:
 	                argazkiaSartu(Modeloa.PROPIETATEA2, lekua);
-	                erabiltzailea.setBalioZerrendaAtIndex(erabiltzailea.getBalioZerrenda().size(), "ventilador");
+	                erabiltzailea.setBalioZerrendaAtIndex(posizioa, "ventilador");
 	                System.out.println(nombre + " balioa " + erabiltzailea.getBalioZerrenda());
 	                erabiltzailea.behin = 1;  
-	                break;
+	                break; 
 
 	            case Modeloa.PROPIETATEA3:
 	                argazkiaSartu(Modeloa.PROPIETATEA3, lekua);
-	                erabiltzailea.setBalioZerrendaAtIndex(erabiltzailea.getBalioZerrenda().size(), "estufa");
+	                erabiltzailea.setBalioZerrendaAtIndex(posizioa, "estufa");
 	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                erabiltzailea.behin = 1;  
 	                break;
@@ -520,6 +647,25 @@ public class Printzipala implements PropertyChangeListener
 	            case Modeloa.PROPIETATEA4:
 	                System.out.println("Recibida actualización de PROPIETATEA4");
 	                actualizarPantalla();
+	                break;
+	                
+	            case Modeloa.PROPIETATEA5:
+	                erabiltzailea.setBalioZerrendaAtIndex(0, null);
+	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                aukerenPANTAILA.dispose();
+	                //erabiltzailea.behin = 0;  
+	                break;
+	                
+	            case Modeloa.PROPIETATEA6:
+	            	erabiltzailea.setBalioZerrendaAtIndex(1, null);
+	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                aukerenPANTAILA.dispose();
+	                break;
+	                
+	            case Modeloa.PROPIETATEA7:
+	            	erabiltzailea.setBalioZerrendaAtIndex(2, null);
+	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                aukerenPANTAILA.dispose();
 	                break;
 	        }
 	        modeloa.start();
@@ -558,6 +704,7 @@ public class Printzipala implements PropertyChangeListener
             else 
             {
                 JOptionPane.showMessageDialog(null, "Erabiltzaile hau ez da existitzen.");
+                loginPantailaErakutzi();
             }
         } 
 		else
@@ -578,12 +725,17 @@ public class Printzipala implements PropertyChangeListener
 	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
 
 	    for (int i = 0; i < erabiltzailea.getBalioZerrenda().size(); i++) {
-	        JButton button = new JButton("Hutsunea " + (i + 1));
-	        button.addActionListener(kontrolatzailea);
-	        botonesHuecosPanel.add(button);
+	        String balio = erabiltzailea.getBalioZerrenda().get(i);
+	        
+	        if (balio != null) 
+	        {
+	            JButton button = new JButton("Hutsunea " + (i + 1));
+	            button.addActionListener(kontrolatzailea);
+	            botonesHuecosPanel.add(button);
 
-	        String balio = erabiltzailea.getBalioZerrenda().get(i).toLowerCase();
-	        irudiaJarri(balio, button);
+	            balio = balio.toLowerCase();
+	            irudiaJarri(balio, button);
+	        }
 	    }
 
 	    JPanel botonAtrasPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -605,6 +757,12 @@ public class Printzipala implements PropertyChangeListener
 	    editButton.addActionListener(kontrolatzailea);
 	    editButton.setPreferredSize(new Dimension(130, 30)); 
 	    botonAtrasPanel.add(editButton);
+	    
+	    deleteButton = new JButton("EZABATU");
+	    deleteButton.setActionCommand("EZABATU");
+	    deleteButton.addActionListener(kontrolatzailea);
+	    deleteButton.setPreferredSize(new Dimension(130, 30)); 
+	    botonAtrasPanel.add(deleteButton);
 
 	    panel.add(botonAtrasPanel, BorderLayout.NORTH);
 	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
@@ -636,22 +794,17 @@ public class Printzipala implements PropertyChangeListener
 	{
 		Modeloa modeloa = new Modeloa (); //MODELOA
 		Kontrolatzailea kontrolatzailea = new Kontrolatzailea(modeloa); //KONTROLATZAILEA
-		//
-		//try {
-            // Initialization
-            Mqtt mqtt1 = null;
-			try {
-				mqtt1 = new Mqtt(BROKER,CLENT_ID);
-			} catch (MqttException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-     
-          
-        //} catch (Exception ex) {
-        //    throw new RuntimeException(ex);
-        //}
-		//
+
+        Mqtt mqtt1 = null;
+        try 
+        {
+        	mqtt1 = new Mqtt(BROKER,CLENT_ID);
+		} 
+        catch (MqttException e) 
+        {
+			e.printStackTrace();
+		}
+
 		Printzipala main = new Printzipala(modeloa,kontrolatzailea, mqtt1); //MAIN		
 		main.loginPantailaErakutzi(); //HASIERAKO FUNTZIOA
 	}
