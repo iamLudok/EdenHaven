@@ -54,17 +54,36 @@ public class Kontrolatzailea implements ActionListener
 	    	}
 	    	irudia.mostrarOpciones();
 	    } 
+	    else if ("IRTEN".equals(e.getActionCommand())) 
+	    {
+	    	System.exit(0);
+	    }
 	    else if ("ATRAS".equals(e.getActionCommand())) 
 	    {
-	    	irudia.mainPANTAILA.dispose();
-	        irudia.loginPantailaErakutzi();
+	    	
+	    	if(irudia.adminMapa==1)
+	    	{
+	    		irudia.mainPANTAILA.dispose();
+	    		irudia.mostrarPantallaAdmin();
+	    	}
+	    	else if(irudia.adminMapa==2)
+	    	{
+	    		irudia.adminFrame.dispose();
+	    		irudia.loginPantailaErakutzi();
+	    	}
+	    	else
+	    	{
+	    		irudia.mainPANTAILA.dispose();
+	    		irudia.loginPantailaErakutzi();
+	    	}	        
 	    }
-	    else if ("EDITATU".equals(e.getActionCommand())) 
+	    else if ("GEHITU".equals(e.getActionCommand())) 
 	    {
+	    	irudia.confirmButton.setVisible(true);
 	    	String nombre = irudia.izenaField.getText();
 	    	Erabiltzailea erabiltzailea = irudia.getErabiltzailea(nombre);
 	    	irudia.mainPANTAILA.dispose();
-	        irudia.mostrarPantallaEditarHuecos(erabiltzailea);
+	        irudia.mostrarPantallaEditarHuecos(erabiltzailea);	        
 	    }
 	    else if ("KONFIRMATU".equals(e.getActionCommand())) 
 	    {
@@ -76,6 +95,7 @@ public class Kontrolatzailea implements ActionListener
 	    else if ("EZABATU".equals(e.getActionCommand())) 
 	    {
 	    	irudia.mostrarOpcionesEliminar();
+	    	irudia.confirmButton.setVisible(true);
 	    }
 	    else if ("POZO".equals(e.getActionCommand())) 
 	    {	    	
