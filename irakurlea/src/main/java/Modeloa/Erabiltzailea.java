@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Erabiltzailea 
 {
-    //ArrayList<Integer> posizioZerrenda; //Hutsuneetako aukeren posizioak gorde
     ArrayList<String> balioZerrenda; //Hutsuneetako argazkiak gorde
     
     private String izena; //Erabiltzailearen izena
@@ -17,24 +16,11 @@ public class Erabiltzailea
 
     public Erabiltzailea()
     {
-        //posizioZerrenda = new ArrayList<>();
-        balioZerrenda = new ArrayList<>();
+      balioZerrenda = new ArrayList<>();
       balioZerrenda.add(null); 
       balioZerrenda.add(null); 
       balioZerrenda.add(null); 
     }
-
-    //POSIZIOA ZERRENDAREN GET ETA SET
-    //public ArrayList<Integer> getPosizioZerrenda() 
-    //{
-    //    return posizioZerrenda;
-    //}
-
-    /*public void setPosizioZerrendaAtIndex(int index, int value) 
-    {
-        posizioZerrenda.add(value); 
-    }*/
-    //
     
     //BALIO ZERRENDAREN GET ETA SET
     public ArrayList<String> getBalioZerrenda() 
@@ -44,10 +30,8 @@ public class Erabiltzailea
 
     public void setBalioZerrendaAtIndex(int index, String value) 
     {
-    	//balioZerrenda.add(value); 
     	balioZerrenda.set(index,value); 
     }
-    //
     
     //PASAHITZAREN GET ETA SET
     public String getPasahitza() 
@@ -59,7 +43,6 @@ public class Erabiltzailea
 	{
 		this.pasahitza = pasahitza;
 	}
-	//
 
 	//IZENAREN GET ETA SET
 	public String getIzena()

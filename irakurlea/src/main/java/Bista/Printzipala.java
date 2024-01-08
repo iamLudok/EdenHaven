@@ -7,7 +7,6 @@ import irakurlea.Mqtt;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -46,7 +45,6 @@ import javax.swing.Timer;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import Kontrolatzailea.Kontrolatzailea;
-import Modeloa.Modeloa;
 
 public class Printzipala implements PropertyChangeListener
 {
@@ -77,7 +75,13 @@ public class Printzipala implements PropertyChangeListener
     //COLLECTIONS
     private Map<String, Erabiltzailea> erabiltzaileak; //ERABILTZAILEEN MAPA
      
-   
+    //ERABILTZAILEA
+    public Erabiltzailea erabiltzailea;
+    //public Erabiltzailea admin;
+    
+    //STRING
+    String izena;
+    
     //INT
     int posizioa=0;
     public int adminMapa = 0;
@@ -111,12 +115,12 @@ public class Printzipala implements PropertyChangeListener
 	            String[] partes = linea.split(":");
 	            if (partes.length >= 2) 
 	            {
-	                String nombre = partes[0].trim();
+	                /*String*/ izena = partes[0].trim();
 	                String contrasena = partes[1].trim();
 
-	                Erabiltzailea erabiltzailea = new Erabiltzailea();
+	                /*Erabiltzailea*/ erabiltzailea = new Erabiltzailea();
 	                erabiltzailea.setPasahitza(contrasena);
-	                erabiltzaileak.put(nombre, erabiltzailea);
+	                erabiltzaileak.put(izena, erabiltzailea);
 	            }
 	        }
 	    } 
@@ -130,10 +134,51 @@ public class Printzipala implements PropertyChangeListener
 	{
 		if (mqtt != null) 
 		{
-			button.setText(String.valueOf(mqtt.valueTemperature));
-	        button2.setText(String.valueOf(mqtt.valueTemperature));
-	        button3.setText(String.valueOf(mqtt.valueTemperature));
-		} else 
+			String balioa;
+			
+			balioa = erabiltzailea.getBalioZerrenda().get(0);
+			if(balioa=="pozo")
+			{
+				button.setText(String.valueOf(mqtt.valueWater));
+			}
+			if(balioa=="ventilador")
+			{
+				button.setText(String.valueOf(mqtt.valueTemperature));
+			}
+			if(balioa=="estufa")
+			{
+				button.setText(String.valueOf(mqtt.valueGas));
+			}
+			
+			balioa = erabiltzailea.getBalioZerrenda().get(1);
+			if(balioa=="pozo")
+			{
+				button2.setText(String.valueOf(mqtt.valueWater));
+			}
+			if(balioa=="ventilador")
+			{
+				button2.setText(String.valueOf(mqtt.valueTemperature));
+			}
+			if(balioa=="estufa")
+			{
+				button2.setText(String.valueOf(mqtt.valueGas));
+			}
+			
+			balioa = erabiltzailea.getBalioZerrenda().get(2);
+			if(balioa=="pozo")
+			{
+				button3.setText(String.valueOf(mqtt.valueWater));
+			}
+			if(balioa=="ventilador")
+			{
+				button3.setText(String.valueOf(mqtt.valueTemperature));
+			}
+			if(balioa=="estufa")
+			{
+				button3.setText(String.valueOf(mqtt.valueGas));
+			}			
+		} 
+		else 
 		{
 		    System.out.println("MQTT es null");
 		}	
@@ -152,7 +197,7 @@ public class Printzipala implements PropertyChangeListener
 	
 	private boolean isUsuarioContraseña(String nombre, String contrasena) 
 	{
-	    Erabiltzailea erabiltzailea = getErabiltzailea(nombre);
+	    /*Erabiltzailea*/ erabiltzailea = getErabiltzailea(nombre);
 
 	    if (erabiltzailea != null) 
 	    {
@@ -279,7 +324,6 @@ public class Printzipala implements PropertyChangeListener
         adminFrame.pack();
         adminFrame.setVisible(true);
     }
-    
 	
     class AdminClickListener extends MouseAdapter 
     {
@@ -304,14 +348,16 @@ public class Printzipala implements PropertyChangeListener
             if (africaLabel.getBounds().contains(e.getPoint())) 
             {
                 adminFrame.dispose();
-                Erabiltzailea erabiltzailea = getErabiltzailea("islandia");
+                izena = "islandia";
+                erabiltzailea = getErabiltzailea("islandia");
                 mostrarPantallaHuecosCompletado(erabiltzailea);
             	adminMapa = 1;
             }
             else if (swedenLabel.getBounds().contains(e.getPoint())) 
             {
                 adminFrame.dispose();
-                Erabiltzailea erabiltzailea = getErabiltzailea("groenlandia");
+                izena = "groenlandia";
+                erabiltzailea = getErabiltzailea("groenlandia");
                 mostrarPantallaHuecosCompletado(erabiltzailea);
             	adminMapa = 1;
             }
@@ -392,8 +438,8 @@ public class Printzipala implements PropertyChangeListener
         confirmButton.setBackground(Color.GREEN);
         confirmButton.setVisible(false);
         
-        String nombre = izenaField.getText();
-        JLabel erabiltzaileIzena = new JLabel(nombre.toUpperCase());
+        //String izena = izenaField.getText();
+        JLabel erabiltzaileIzena = new JLabel(izena.toUpperCase());
         erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 20));
 
         int spaceWidth = 50;
@@ -432,13 +478,36 @@ public class Printzipala implements PropertyChangeListener
 
 	        if (currentValue != null) 
 	        {
-	            JButton button = new JButton("Hutsunea " + (i + 1));
+	        	String balio;
+	            /*JButton button = new JButton("Hutsunea " + (i + 1));
 	            button.addActionListener(kontrolatzailea);
 	            botonesHuecosPanel.add(button);
 
 	            String balio = String.valueOf(currentValue).toLowerCase();
 	            irudiaJarri(balio, button);
-	            balixu++;
+	            balixu++;*/
+	        	if(i==0)
+	        	{
+		    	    botonesHuecosPanel.add(button);
+		    	    balio = String.valueOf(currentValue).toLowerCase();
+		            irudiaJarri(balio, button);
+		            balixu++;
+	        	}
+	        	else if(i==1)
+	        	{
+		    	    botonesHuecosPanel.add(button2);
+		    	    balio = String.valueOf(currentValue).toLowerCase();
+		            irudiaJarri(balio, button2);
+		            balixu++;
+	        	}
+
+	        	else if(i==2)
+	        	{
+		    	    botonesHuecosPanel.add(button3);
+		    	    balio = String.valueOf(currentValue).toLowerCase();
+		            irudiaJarri(balio, button3);
+		            balixu++;
+	        	}
 	        } 
 	        else 
 	        {
@@ -508,8 +577,7 @@ public class Printzipala implements PropertyChangeListener
         confirmButton.setBackground(Color.GREEN);
         confirmButton.setVisible(false);
         
-        String nombre = izenaField.getText();
-        JLabel erabiltzaileIzena = new JLabel(nombre.toUpperCase());
+        JLabel erabiltzaileIzena = new JLabel(izena.toUpperCase());
         erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 20));
 
         int spaceWidth = 50;
@@ -591,10 +659,9 @@ public class Printzipala implements PropertyChangeListener
 	
 	private void argazkiaSartu(String argazkia, int lekua) 
 	{
-	    String nombre = izenaField.getText();
-	    Erabiltzailea usuario = getErabiltzailea(nombre);
+	    erabiltzailea = getErabiltzailea(izena);
 
-	    if (usuario != null) 
+	    if (erabiltzailea != null) 
 	    {
 	        switch (lekua) 
 	        {
@@ -638,9 +705,9 @@ public class Printzipala implements PropertyChangeListener
 	    String propiedad = e.getPropertyName();
 	    int lekua = (int) e.getNewValue();
 
-	    String nombre = izenaField.getText();
+	    //String izena = izenaField.getText();
 
-	    Erabiltzailea erabiltzailea = getErabiltzailea(nombre);
+	    /*Erabiltzailea*/ erabiltzailea = getErabiltzailea(izena);
 
 	    if (erabiltzailea != null) 
 	    {
@@ -649,21 +716,21 @@ public class Printzipala implements PropertyChangeListener
 	            case Modeloa.PROPIETATEA:
 	                argazkiaSartu(Modeloa.PROPIETATEA, lekua);
 	                erabiltzailea.setBalioZerrendaAtIndex(posizioa, "pozo");
-	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                System.out.println(izena + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                erabiltzailea.behin = 1;  
 	                break;
 
 	            case Modeloa.PROPIETATEA2:
 	                argazkiaSartu(Modeloa.PROPIETATEA2, lekua);
 	                erabiltzailea.setBalioZerrendaAtIndex(posizioa, "ventilador");
-	                System.out.println(nombre + " balioa " + erabiltzailea.getBalioZerrenda());
+	                System.out.println(izena + " balioa " + erabiltzailea.getBalioZerrenda());
 	                erabiltzailea.behin = 1;  
 	                break; 
 
 	            case Modeloa.PROPIETATEA3:
 	                argazkiaSartu(Modeloa.PROPIETATEA3, lekua);
 	                erabiltzailea.setBalioZerrendaAtIndex(posizioa, "estufa");
-	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                System.out.println(izena + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                erabiltzailea.behin = 1;  
 	                break;
 	                
@@ -674,20 +741,20 @@ public class Printzipala implements PropertyChangeListener
 	                
 	            case Modeloa.PROPIETATEA5:
 	                erabiltzailea.setBalioZerrendaAtIndex(0, null);
-	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                System.out.println(izena + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                aukerenPANTAILA.dispose();
 	                //erabiltzailea.behin = 0;  
 	                break;
 	                
 	            case Modeloa.PROPIETATEA6:
 	            	erabiltzailea.setBalioZerrendaAtIndex(1, null);
-	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                System.out.println(izena + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                aukerenPANTAILA.dispose();
 	                break;
 	                
 	            case Modeloa.PROPIETATEA7:
 	            	erabiltzailea.setBalioZerrendaAtIndex(2, null);
-	                System.out.println(nombre + " balioa: " + erabiltzailea.getBalioZerrenda());
+	                System.out.println(izena + " balioa: " + erabiltzailea.getBalioZerrenda());
 	                aukerenPANTAILA.dispose();
 	                break;
 	        }
@@ -697,20 +764,20 @@ public class Printzipala implements PropertyChangeListener
 	
 	public void autenticarUsuario() 
 	{
-		String nombre = izenaField.getText();
+		/*String*/ izena = izenaField.getText();
         String contrasena = new String(pasahitzaField.getPassword());        
         
-		if (modeloa.autenticar(nombre, contrasena)) 
+		if (modeloa.autenticar(izena, contrasena)) 
 		{
 			loginPANTAILA.dispose(); //Login pantaila itxi
 
-            if (("admin".equals(nombre)) && ("admin".equals(contrasena))) 
+            if (("admin".equals(izena)) && ("admin".equals(contrasena))) 
             {
                 mostrarPantallaAdmin();
             } 
-            else if ((isUsuarioRegistrado(nombre)) && (isUsuarioContraseña(nombre,contrasena)))
+            else if ((isUsuarioRegistrado(izena)) && (isUsuarioContraseña(izena,contrasena)))
             {           	
-            	Erabiltzailea erabiltzailea = getErabiltzailea(nombre);   
+            	/*Erabiltzailea*/ erabiltzailea = getErabiltzailea(izena);   
             	if(erabiltzailea.behin==0)
             	{          		                
             		mostrarPantallaHuecos();
@@ -720,7 +787,7 @@ public class Printzipala implements PropertyChangeListener
             		mostrarPantallaHuecosCompletado(erabiltzailea);
             	}
             }         
-            else if ("Ludok".equals(nombre) && "dj".equals(contrasena)) 
+            else if ("Ludok".equals(izena) && "dj".equals(contrasena)) 
             {
                 ludokLovesU();
             }
@@ -753,12 +820,31 @@ public class Printzipala implements PropertyChangeListener
 	        
 	        if (balio != null) 
 	        {
-	            JButton button = new JButton("Hutsunea " + (i + 1));
+	            /*JButton button = new JButton("Hutsunea " + (i + 1));
 	            button.addActionListener(kontrolatzailea);
 	            botonesHuecosPanel.add(button);
 
 	            balio = balio.toLowerCase();
-	            irudiaJarri(balio, button);
+	            irudiaJarri(balio, button);*/
+	        	if(i==0)
+	        	{
+		    	    botonesHuecosPanel.add(button);
+		    	    balio = balio.toLowerCase();
+		            irudiaJarri(balio, button);
+	        	}
+	        	else if(i==1)
+	        	{
+		    	    botonesHuecosPanel.add(button2);
+		    	    balio = balio.toLowerCase();
+		            irudiaJarri(balio, button2);
+	        	}
+
+	        	else if(i==2)
+	        	{
+		    	    botonesHuecosPanel.add(button3);
+		    	    balio = balio.toLowerCase();
+		            irudiaJarri(balio, button3);
+	        	}
 	        }
 	    }
 
@@ -797,8 +883,7 @@ public class Printzipala implements PropertyChangeListener
         confirmButton.setBackground(Color.GREEN);
         confirmButton.setVisible(false);
         
-        String nombre = izenaField.getText();
-        JLabel erabiltzaileIzena = new JLabel(nombre.toUpperCase());
+        JLabel erabiltzaileIzena = new JLabel(izena.toUpperCase());
         erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 20));
 
         int spaceWidth = 50;

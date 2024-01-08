@@ -80,17 +80,13 @@ public class Kontrolatzailea implements ActionListener
 	    else if ("GEHITU".equals(e.getActionCommand())) 
 	    {
 	    	irudia.confirmButton.setVisible(true);
-	    	String nombre = irudia.izenaField.getText();
-	    	Erabiltzailea erabiltzailea = irudia.getErabiltzailea(nombre);
 	    	irudia.mainPANTAILA.dispose();
-	        irudia.mostrarPantallaEditarHuecos(erabiltzailea);	        
+	        irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);	        
 	    }
 	    else if ("KONFIRMATU".equals(e.getActionCommand())) 
 	    {
-	    	String nombre = irudia.izenaField.getText();
-	    	Erabiltzailea erabiltzailea = irudia.getErabiltzailea(nombre);  
 	    	irudia.mainPANTAILA.dispose();
-	        irudia.mostrarPantallaHuecosCompletado(erabiltzailea);
+	        irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
 	    }
 	    else if ("EZABATU".equals(e.getActionCommand())) 
 	    {
