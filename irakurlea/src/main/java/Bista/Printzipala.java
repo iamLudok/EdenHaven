@@ -14,17 +14,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -34,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -42,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -50,50 +39,69 @@ import Kontrolatzailea.Kontrolatzailea;
 
 public class Printzipala implements PropertyChangeListener
 {
-	Modeloa modeloa; //MODELOA
-	Kontrolatzailea kontrolatzailea; //KONTROLATZAILEA
+	//MODELOA
+	private Modeloa modeloa; 
+	
+	//KONTROLATZAILEA
+	private Kontrolatzailea kontrolatzailea; 
 	
 	//PANTAILAK
-	JFrame ordenagailuarenPANTAILA; //REBISATU
-	JFrame loginPANTAILA;	
+	private JFrame ordenagailuarenPANTAILA; //REBISATU
 	public JFrame mainPANTAILA;
-	JFrame aukerenPANTAILA;
 	public JFrame adminFrame;
-	
+	public JFrame loginPANTAILA;		
+	private JFrame aukerenPANTAILA;
+		
 	//JFIELD
 	public JTextField izenaField;
-	JPasswordField pasahitzaField;
+	public JPasswordField pasahitzaField;
+	
+	//JLABEL
+	public JLabel argeliaBABESETXE;
+	public JLabel groenlandiaBABESETXE;
+	JLabel erabiltzaileIzena;
 	
 	//BOTOIAK
-    JButton button; //EZKERREKO BOTOIA
-    JButton button2; //ERDIKO BOTOIA
-    JButton button3; //ESKUINEKO BOTOIA
-    JButton backButton; //ATZERA JOATEKO BOTOIA
-    JButton editButton;
-    public JButton confirmButton;
-    JButton erabiltzaileButton;
-    JButton deleteButton;
-    public JButton loginButton;
+	private JButton button; //EZKERREKO BOTOIA
+	private JButton button2; //ERDIKO BOTOIA
+	private JButton button3; //ESKUINEKO BOTOIA
+	public JButton backButton; //ATZERA JOATEKO BOTOIA
+	public JButton editButton;
+	public JButton confirmButton;
+	private JButton irtenButton;
+	public JButton deleteButton;
+	public JButton loginButton;
+	private JButton putzuBOTOIA;
+	private JButton putzuBOTOIA2;
+	private JButton putzuBOTOIA3;
+	private JButton haizegailuBOTOIA;
+	private JButton haizegailuBOTOIA2;
+	private JButton haizegailuBOTOIA3;
+	private JButton berogailuBOTOIA;
+	private JButton berogailuBOTOIA2;
+	private JButton berogailuBOTOIA3;
     
-    //COLLECTIONS
-    private Map<String, Erabiltzailea> erabiltzaileak; //ERABILTZAILEEN MAPA
-     
     //ERABILTZAILEA
     public Erabiltzailea erabiltzailea;
     
+    //JTOOLBAR
+    private JToolBar toolBar;
+    
     //STRING
-    String izena;
-    String ezabatuAukerak;
+    public String izena;
+    private static final String BROKER = "tcp://localhost:1883";
+    private static final String CLENT_ID = "TemperatureIrakurle";
     
     //INT
-    int posizioa=0;
+    private int posizioa=0;
     public int adminMapa = 0;
-    int spaceWidth = 50;
+    private static int spaceWidth = 50;
+    private static int spaceWidth2 = 15;
 
-    Mqtt mqtt;
-    public static final String BROKER = "tcp://localhost:1883";
-    public static final String CLENT_ID = "TemperatureIrakurle";
-    public static final int QoS = 2;
+    //MQTT
+    private Mqtt mqtt;
+      
+    //private static final int QoS = 2;
            	
 	public Printzipala(Modeloa modeloa, Kontrolatzailea kontrolatzailea, Mqtt mqtt) //PRINTZIPALAREN KONSTRUKTOREA
 	{
@@ -101,39 +109,12 @@ public class Printzipala implements PropertyChangeListener
 		this.kontrolatzailea = kontrolatzailea; //KONTROLATZAILEA
 		this.mqtt = mqtt;
 		this.modeloa.addPropertyChangeListener(this); //PROPERTY CHANGE
-		
-		erabiltzaileak = new HashMap<>(); //ERABILTZAILEEN HASH MAPA
-		
-		erabiltzaileakIrakurri(); //ERABILTZAILEEN FITXATEGIA IRAKURRI ETA ERABILTZAILEAK SORTU
+						
+		modeloa.erabiltzaileakIrakurri(); //ERABILTZAILEEN FITXATEGIA IRAKURRI ETA ERABILTZAILEAK SORTU
 		
 		toolbarBotoienKonfigurazioa();
 		
 		modeloa.start();
-	}
-	
-	private void erabiltzaileakIrakurri() //ERABILTZAILEEN FITXATEGIA IRAKURRI ETA ERABILTZAILEAK SORTU
-	{
-	    try (BufferedReader br = new BufferedReader(new FileReader("erabiltzaileak.txt"))) 
-	    {
-	        String linea;
-	        while ((linea = br.readLine()) != null) 
-	        {
-	            String[] partes = linea.split(":");
-	            if (partes.length >= 2) 
-	            {
-	                /*String*/ izena = partes[0].trim();
-	                String contrasena = partes[1].trim();
-
-	                /*Erabiltzailea*/ erabiltzailea = new Erabiltzailea();
-	                erabiltzailea.setPasahitza(contrasena);
-	                erabiltzaileak.put(izena, erabiltzailea);
-	            }
-	        }
-	    } 
-	    catch (IOException e) 
-	    {
-	        e.printStackTrace();
-	    }
 	}
 	
 	private void toolbarBotoienKonfigurazioa()
@@ -141,7 +122,7 @@ public class Printzipala implements PropertyChangeListener
 		backButton = new JButton("ATZERA");
         backButton.setActionCommand("ATRAS");
 	    backButton.addActionListener(kontrolatzailea);
-	    backButton.setPreferredSize(new Dimension(80, 30));
+	    backButton.setPreferredSize(new Dimension(130, 30));
 	    
 	    editButton = new JButton("GEHITU");
         editButton.setActionCommand("GEHITU");
@@ -158,6 +139,32 @@ public class Printzipala implements PropertyChangeListener
         confirmButton.addActionListener(kontrolatzailea);
         confirmButton.setPreferredSize(new Dimension(130, 30)); 
         confirmButton.setBackground(Color.GREEN);
+        
+        putzuBOTOIA = new JButton("P1");
+        putzuBOTOIA.setPreferredSize(new Dimension(110, 30)); 
+        putzuBOTOIA2 = new JButton("P2");
+        putzuBOTOIA2.setPreferredSize(new Dimension(110, 30)); 
+        putzuBOTOIA3 = new JButton("P3");
+        putzuBOTOIA3.setPreferredSize(new Dimension(110, 30)); 
+        
+        haizegailuBOTOIA = new JButton("H1");
+        haizegailuBOTOIA.setPreferredSize(new Dimension(110, 30)); 
+        haizegailuBOTOIA2 = new JButton("H2");
+        haizegailuBOTOIA2.setPreferredSize(new Dimension(110, 30)); 
+        haizegailuBOTOIA3 = new JButton("H3");
+        haizegailuBOTOIA3.setPreferredSize(new Dimension(110, 30)); 
+        
+        berogailuBOTOIA = new JButton("B1");
+        berogailuBOTOIA.setPreferredSize(new Dimension(110, 30)); 
+        berogailuBOTOIA2 = new JButton("B2");
+        berogailuBOTOIA2.setPreferredSize(new Dimension(110, 30)); 
+        berogailuBOTOIA3 = new JButton("B3");
+        berogailuBOTOIA3.setPreferredSize(new Dimension(110, 30)); 
+        
+        irtenButton = new JButton("IRTEN");
+        irtenButton.setActionCommand("IRTEN");
+        irtenButton.addActionListener(kontrolatzailea);
+        irtenButton.setPreferredSize(new Dimension(130, 30)); 
 	}
 	
 	private void actualizarPantalla() 
@@ -173,16 +180,22 @@ public class Printzipala implements PropertyChangeListener
 				if(PozoKop == 1)
 				{
 					button.setText(String.valueOf(mqtt.valueWater2));
+					putzuBOTOIA2.setBackground(Color.GREEN);
+					putzuBOTOIA2.setVisible(true);
 					PozoKop++;
 				}
 				else if(PozoKop == 2)
 				{
 					button.setText(String.valueOf(mqtt.valueWater3));
+					putzuBOTOIA3.setBackground(Color.GREEN);
+					putzuBOTOIA3.setVisible(true);
 					PozoKop++;
 				}
 				else 
 				{
 					button.setText(String.valueOf(mqtt.valueWater));
+					putzuBOTOIA.setBackground(Color.GREEN);
+					putzuBOTOIA.setVisible(true);
 					PozoKop++;
 				}
 			}
@@ -191,16 +204,22 @@ public class Printzipala implements PropertyChangeListener
 				if(VentilaKop == 1)
 				{
 					button.setText(String.valueOf(mqtt.valueTemperature2));
+					haizegailuBOTOIA2.setBackground(Color.GREEN);
+					haizegailuBOTOIA2.setVisible(true);
 					VentilaKop++;
 				}
 				else if(VentilaKop == 2)
 				{
 					button.setText(String.valueOf(mqtt.valueTemperature3));
+					haizegailuBOTOIA3.setBackground(Color.GREEN);
+					haizegailuBOTOIA3.setVisible(true);
 					VentilaKop++;
 				}
 				else 
 				{
 					button.setText(String.valueOf(mqtt.valueTemperature));
+					haizegailuBOTOIA.setBackground(Color.GREEN);
+					haizegailuBOTOIA.setVisible(true);
 					VentilaKop++;
 				}
 			}
@@ -209,16 +228,22 @@ public class Printzipala implements PropertyChangeListener
 				if(EstufaKop == 1)
 				{
 					button.setText(String.valueOf(mqtt.valueGas2));
+					berogailuBOTOIA2.setBackground(Color.GREEN);
+					berogailuBOTOIA2.setVisible(true);
 					EstufaKop++;
 				}
 				else if(EstufaKop == 2)
 				{
 					button.setText(String.valueOf(mqtt.valueGas3));
+					berogailuBOTOIA3.setBackground(Color.GREEN);
+					berogailuBOTOIA3.setVisible(true);
 					EstufaKop++;
 				}
 				else 
 				{
 					button.setText(String.valueOf(mqtt.valueGas));
+					berogailuBOTOIA.setBackground(Color.GREEN);
+					berogailuBOTOIA.setVisible(true);
 					EstufaKop++;
 				}
 			}
@@ -229,16 +254,22 @@ public class Printzipala implements PropertyChangeListener
 				if(PozoKop == 1)
 				{
 					button2.setText(String.valueOf(mqtt.valueWater2));
+					putzuBOTOIA2.setBackground(Color.GREEN);
+					putzuBOTOIA2.setVisible(true);
 					PozoKop++;
 				}
 				else if(PozoKop == 2)
 				{
 					button2.setText(String.valueOf(mqtt.valueWater3));
+					putzuBOTOIA3.setBackground(Color.GREEN);
+					putzuBOTOIA3.setVisible(true);
 					PozoKop++;
 				}
 				else 
 				{
 					button2.setText(String.valueOf(mqtt.valueWater));
+					putzuBOTOIA.setBackground(Color.GREEN);
+					putzuBOTOIA.setVisible(true);
 					PozoKop++;
 				}
 				
@@ -248,16 +279,22 @@ public class Printzipala implements PropertyChangeListener
 				if(VentilaKop == 1)
 				{
 					button2.setText(String.valueOf(mqtt.valueTemperature2));
+					haizegailuBOTOIA2.setBackground(Color.GREEN);
+					haizegailuBOTOIA2.setVisible(true);
 					VentilaKop++;
 				}
 				else if(VentilaKop == 2)
 				{
 					button2.setText(String.valueOf(mqtt.valueTemperature3));
+					haizegailuBOTOIA3.setBackground(Color.GREEN);
+					haizegailuBOTOIA3.setVisible(true);
 					VentilaKop++;
 				}
 				else 
 				{
 					button2.setText(String.valueOf(mqtt.valueTemperature));
+					haizegailuBOTOIA.setBackground(Color.GREEN);
+					haizegailuBOTOIA.setVisible(true);
 					VentilaKop++;
 				}
 			}
@@ -266,16 +303,22 @@ public class Printzipala implements PropertyChangeListener
 				if(EstufaKop == 1)
 				{
 					button2.setText(String.valueOf(mqtt.valueGas2));
+					berogailuBOTOIA2.setBackground(Color.GREEN);
+					berogailuBOTOIA2.setVisible(true);
 					EstufaKop++;
 				}
 				else if(EstufaKop == 2)
 				{
 					button2.setText(String.valueOf(mqtt.valueGas3));
+					berogailuBOTOIA3.setBackground(Color.GREEN);
+					berogailuBOTOIA3.setVisible(true);
 					EstufaKop++;
 				}
 				else 
 				{
 					button2.setText(String.valueOf(mqtt.valueGas));
+					berogailuBOTOIA.setBackground(Color.GREEN);
+					berogailuBOTOIA.setVisible(true);
 					EstufaKop++;
 				}
 			}
@@ -286,16 +329,22 @@ public class Printzipala implements PropertyChangeListener
 				if(PozoKop == 1)
 				{
 					button3.setText(String.valueOf(mqtt.valueWater2));
+					putzuBOTOIA3.setBackground(Color.GREEN);
+					putzuBOTOIA3.setVisible(true);
 					PozoKop++;
 				}
 				else if(PozoKop == 2)
 				{
 					button3.setText(String.valueOf(mqtt.valueWater3));
+					putzuBOTOIA2.setBackground(Color.GREEN);
+					putzuBOTOIA2.setVisible(true);
 					PozoKop++;
 				}
 				else 
 				{
 					button3.setText(String.valueOf(mqtt.valueWater));
+					putzuBOTOIA.setBackground(Color.GREEN);
+					putzuBOTOIA.setVisible(true);
 					PozoKop++;
 				}
 			}
@@ -304,16 +353,22 @@ public class Printzipala implements PropertyChangeListener
 				if(VentilaKop == 1)
 				{
 					button3.setText(String.valueOf(mqtt.valueTemperature2));
+					haizegailuBOTOIA2.setBackground(Color.GREEN);
+					haizegailuBOTOIA2.setVisible(true);
 					VentilaKop++;
 				}
 				else if(VentilaKop == 2)
 				{
 					button3.setText(String.valueOf(mqtt.valueTemperature3));
+					haizegailuBOTOIA3.setBackground(Color.GREEN);
+					haizegailuBOTOIA3.setVisible(true);
 					VentilaKop++;
 				}
 				else 
 				{
 					button3.setText(String.valueOf(mqtt.valueTemperature));
+					haizegailuBOTOIA.setBackground(Color.GREEN);
+					haizegailuBOTOIA.setVisible(true);
 					VentilaKop++;
 				}
 			}
@@ -322,16 +377,22 @@ public class Printzipala implements PropertyChangeListener
 				if(EstufaKop == 1)
 				{
 					button3.setText(String.valueOf(mqtt.valueGas2));
+					berogailuBOTOIA2.setBackground(Color.GREEN);
+					berogailuBOTOIA2.setVisible(true);
 					EstufaKop++;
 				}
 				else if(EstufaKop == 2)
 				{
 					button3.setText(String.valueOf(mqtt.valueGas3));
+					berogailuBOTOIA3.setBackground(Color.GREEN);
+					berogailuBOTOIA3.setVisible(true);
 					EstufaKop++;
 				}
 				else 
 				{
 					button3.setText(String.valueOf(mqtt.valueGas));
+					berogailuBOTOIA.setBackground(Color.GREEN);
+					berogailuBOTOIA.setVisible(true);
 					EstufaKop++;
 				}
 			}			
@@ -340,30 +401,7 @@ public class Printzipala implements PropertyChangeListener
 		{
 		    System.out.println("MQTT es null");
 		}	
-    }
-
-	
-	public Erabiltzailea getErabiltzailea(String nombre) 
-	{
-	    return erabiltzaileak.get(nombre);
-	}
-	
-	private boolean isUsuarioRegistrado(String nombre) 
-	{
-	    return erabiltzaileak.containsKey(nombre);
-	}
-	
-	private boolean isUsuarioContraseña(String nombre, String contrasena) 
-	{
-	    /*Erabiltzailea*/ erabiltzailea = getErabiltzailea(nombre);
-
-	    if (erabiltzailea != null) 
-	    {
-	        return contrasena.equals(erabiltzailea.getPasahitza());
-	    }
-
-	    return false;
-	}
+    }	
 	
 	public void loginPantailaErakutzi() 
 	{
@@ -375,6 +413,7 @@ public class Printzipala implements PropertyChangeListener
             loginPANTAILA.setUndecorated(true);
             
             kontrolatzailea.setIrudia(this);
+            modeloa.setIrudia(this);
             
             JPanel loginPanel = new JPanel(new GridBagLayout());
 
@@ -387,9 +426,13 @@ public class Printzipala implements PropertyChangeListener
             loginPANTAILA.setLayout(new BorderLayout());
             loginPANTAILA.add(loginPanel, BorderLayout.CENTER);
 
-            //Izena eta pasahitza
+            //IZENA
             izenaField = new JTextField(20);
+            izenaField.addKeyListener(kontrolatzailea);
+            
+            //PASAHITZA
             pasahitzaField = new JPasswordField(20);
+            pasahitzaField.addKeyListener(kontrolatzailea);
 
             loginPanel.add(new JLabel("Izena:"), gbc);
 
@@ -404,28 +447,7 @@ public class Printzipala implements PropertyChangeListener
 
             loginButton = new JButton("HASI SAIOA");
             loginButton.setActionCommand("SAIOAHASI");
-            loginButton.addActionListener(kontrolatzailea);
-            pasahitzaField.addKeyListener(kontrolatzailea); 
-            /*{
-                @Override
-                public void keyTyped(KeyEvent e) 
-                {
-                }
-
-                @Override
-                public void keyPressed(KeyEvent e) 
-                {
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER) 
-                    {
-                    	loginButton.doClick();
-                    }
-                }
-
-                @Override
-                public void keyReleased(KeyEvent e) 
-                {
-                }
-            });*/
+            loginButton.addActionListener(kontrolatzailea);                      
             
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -461,35 +483,21 @@ public class Printzipala implements PropertyChangeListener
 
             ImageIcon africaIcon = new ImageIcon("ikonoak/babesetxe.png");
             africaIcon = new ImageIcon(africaIcon.getImage().getScaledInstance(hostelWidth, hostelHeight, Image.SCALE_SMOOTH));
-            JLabel africaLabel = new JLabel(africaIcon);
-            africaLabel.setBounds(300, 200, hostelWidth, hostelHeight);
-            layeredPane.add(africaLabel, JLayeredPane.PALETTE_LAYER);
+            argeliaBABESETXE = new JLabel(africaIcon);
+            argeliaBABESETXE.setBounds(900, 400, hostelWidth, hostelHeight);
+            layeredPane.add(argeliaBABESETXE, JLayeredPane.PALETTE_LAYER);
 
             ImageIcon swedenIcon = new ImageIcon("ikonoak/babesetxe.png");
             swedenIcon = new ImageIcon(swedenIcon.getImage().getScaledInstance(hostelWidth, hostelHeight, Image.SCALE_SMOOTH));
-            JLabel swedenLabel = new JLabel(swedenIcon);
-            swedenLabel.setBounds(500, 750, hostelWidth, hostelHeight);
-            layeredPane.add(swedenLabel, JLayeredPane.PALETTE_LAYER);
-
-            ImageIcon chinaIcon = new ImageIcon("ikonoak/babesetxe.png");
-            chinaIcon = new ImageIcon(chinaIcon.getImage().getScaledInstance(hostelWidth, hostelHeight, Image.SCALE_SMOOTH));
-            JLabel chinaLabel = new JLabel(chinaIcon);
-            chinaLabel.setBounds(1650, 750, hostelWidth, hostelHeight);
-            layeredPane.add(chinaLabel, JLayeredPane.PALETTE_LAYER);
-
-            ImageIcon oceaniaIcon = new ImageIcon("ikonoak/babesetxe.png");
-            oceaniaIcon = new ImageIcon(oceaniaIcon.getImage().getScaledInstance(hostelWidth, hostelHeight, Image.SCALE_SMOOTH));
-            JLabel oceaniaLabel = new JLabel(oceaniaIcon);
-            oceaniaLabel.setBounds(900, 400, hostelWidth, hostelHeight);
-            layeredPane.add(oceaniaLabel, JLayeredPane.PALETTE_LAYER);
+            groenlandiaBABESETXE = new JLabel(swedenIcon);
+            groenlandiaBABESETXE.setBounds(700, 100, hostelWidth, hostelHeight);
+            layeredPane.add(groenlandiaBABESETXE, JLayeredPane.PALETTE_LAYER);
 
             //Arratoia konfiguratu
-            layeredPane.addMouseListener(new AdminClickListener(adminFrame, africaLabel, swedenLabel, chinaLabel, oceaniaLabel));
+            layeredPane.addMouseListener(kontrolatzailea);
 
-            JToolBar toolBar = new JToolBar();
-            /*JButton backButton = new JButton("ATZERA");
-            backButton.setActionCommand("ATRAS");
-    	    backButton.addActionListener(kontrolatzailea);*/
+            toolBar = new JToolBar();
+
             toolBar.add(backButton);
             adminFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
         } 
@@ -502,57 +510,6 @@ public class Printzipala implements PropertyChangeListener
         adminFrame.getContentPane().add(layeredPane);
         adminFrame.pack();
         adminFrame.setVisible(true);
-    }
-	
-    class AdminClickListener extends MouseAdapter 
-    {
-        private JFrame adminFrame;
-        private JLabel africaLabel;
-        private JLabel swedenLabel;
-        private JLabel chinaLabel;
-        private JLabel oceaniaLabel;
-
-        public AdminClickListener(JFrame adminFrame, JLabel africaLabel, JLabel swedenLabel, JLabel chinaLabel, JLabel oceaniaLabel) 
-        {
-            this.adminFrame = adminFrame;
-            this.africaLabel = africaLabel;
-            this.swedenLabel = swedenLabel;
-            this.chinaLabel = chinaLabel;
-            this.oceaniaLabel = oceaniaLabel;
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) 
-        {
-            if (africaLabel.getBounds().contains(e.getPoint())) 
-            {
-                adminFrame.dispose();
-                izena = "islandia";
-                erabiltzailea = getErabiltzailea("islandia");
-                mostrarPantallaHuecosCompletado(erabiltzailea);
-            	adminMapa = 1;
-            }
-            else if (swedenLabel.getBounds().contains(e.getPoint())) 
-            {
-                adminFrame.dispose();
-                izena = "groenlandia";
-                erabiltzailea = getErabiltzailea("groenlandia");
-                mostrarPantallaHuecosCompletado(erabiltzailea);
-            	adminMapa = 1;
-            }
-            else if (chinaLabel.getBounds().contains(e.getPoint())) 
-            {
-                adminFrame.dispose();
-                mostrarPantallaHuecos();
-            	adminMapa = 1;
-            }
-            else if (oceaniaLabel.getBounds().contains(e.getPoint())) 
-            {
-                adminFrame.dispose();
-                mostrarPantallaHuecos();
-            	adminMapa = 1;
-            }
-        }
     }
         
 	public void mostrarPantallaHuecos()
@@ -583,51 +540,51 @@ public class Printzipala implements PropertyChangeListener
 	    botonesHuecosPanel.add(button3);
 	    
 	    JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("Archivo");
-        JMenuItem exitMenuItem = new JMenuItem("Salir");
-        exitMenuItem.setActionCommand("IRTEN");
-        
-        fileMenu.add(exitMenuItem);
+        JMenu fileMenu = new JMenu("EDEN HAVEN BABESETXEAK");
         menuBar.add(fileMenu);
         mainPANTAILA.setJMenuBar(menuBar);
         
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar();
         
-        /*backButton = new JButton("ATZERA");
-        backButton.setActionCommand("ATRAS");
-	    backButton.addActionListener(kontrolatzailea);
-	    backButton.setPreferredSize(new Dimension(80, 30)); */
-	    
-        /*editButton = new JButton("GEHITU");
-        editButton.setActionCommand("GEHITU");
-	    editButton.addActionListener(kontrolatzailea);
-	    editButton.setPreferredSize(new Dimension(130, 30));
-	    editButton.setBackground(Color.BLUE);	*/ 
+        deleteButton.setVisible(true);
+    	editButton.setVisible(true);
+    	backButton.setVisible(true);
+    	confirmButton.setVisible(false);
+    	
+    	putzuBOTOIA.setVisible(false);
+    	putzuBOTOIA2.setVisible(false);
+    	putzuBOTOIA3.setVisible(false);
+    	haizegailuBOTOIA.setVisible(false);
+    	haizegailuBOTOIA2.setVisible(false);
+    	haizegailuBOTOIA3.setVisible(false);
+    	berogailuBOTOIA.setVisible(false);
+    	berogailuBOTOIA2.setVisible(false);
+    	berogailuBOTOIA3.setVisible(false);
         
-        /*deleteButton = new JButton("EZABATU");
-        deleteButton.setActionCommand("EZABATU");
-	    deleteButton.addActionListener(kontrolatzailea);
-	    deleteButton.setPreferredSize(new Dimension(130, 30));   
-        deleteButton.setBackground(Color.RED);*/     
-        
-        /*confirmButton = new JButton("KONFIRMATU");
-        confirmButton.setActionCommand("KONFIRMATU");
-        confirmButton.addActionListener(kontrolatzailea);
-        confirmButton.setPreferredSize(new Dimension(130, 30)); 
-        confirmButton.setBackground(Color.GREEN);*/
-        confirmButton.setVisible(false);
-        
-        //String izena = izenaField.getText();
-        JLabel erabiltzaileIzena = new JLabel(izena.toUpperCase());
-        erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 20));
+        erabiltzaileIzena = new JLabel(izena.toUpperCase());  
+		erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 30));
         
         toolBar.add(backButton);
         toolBar.add(editButton);
         toolBar.add(deleteButton);
         toolBar.add(confirmButton);
         toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(putzuBOTOIA);
+        toolBar.add(putzuBOTOIA2);
+        toolBar.add(putzuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(haizegailuBOTOIA);
+        toolBar.add(haizegailuBOTOIA2);
+        toolBar.add(haizegailuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(berogailuBOTOIA);
+        toolBar.add(berogailuBOTOIA2);
+        toolBar.add(berogailuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
         toolBar.add(erabiltzaileIzena);
         toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(irtenButton);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth2));
         
 
 	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
@@ -656,13 +613,7 @@ public class Printzipala implements PropertyChangeListener
 	        if (currentValue != null) 
 	        {
 	        	String balio;
-	            /*JButton button = new JButton("Hutsunea " + (i + 1));
-	            button.addActionListener(kontrolatzailea);
-	            botonesHuecosPanel.add(button);
 
-	            String balio = String.valueOf(currentValue).toLowerCase();
-	            irudiaJarri(balio, button);
-	            balixu++;*/
 	        	if(i==0)
 	        	{
 		    	    botonesHuecosPanel.add(button);
@@ -716,52 +667,151 @@ public class Printzipala implements PropertyChangeListener
 	    {
 	    	String mensaje = "3 ELEMENTU GEHITU AHAL DITUZU GEHIENEZ!";
 	        JOptionPane.showMessageDialog(null, mensaje);
-	        confirmButton.setVisible(false);	        
+	        deleteButton.setVisible(true);
+	    	editButton.setVisible(true);
+	    	backButton.setVisible(true);
+	    	confirmButton.setVisible(false);	        
 	    }
 	    
 	    JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("Archivo");
-        JMenuItem exitMenuItem = new JMenuItem("Salir");
-        exitMenuItem.setActionCommand("IRTEN");
-        
-        fileMenu.add(exitMenuItem);
+        JMenu fileMenu = new JMenu("EDEN HAVEN BABESETXEAK");
         menuBar.add(fileMenu);
         mainPANTAILA.setJMenuBar(menuBar);
         
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar();
         
-        /*backButton = new JButton("ATZERA");
-        backButton.setActionCommand("ATRAS");
-	    backButton.addActionListener(kontrolatzailea);
-	    backButton.setPreferredSize(new Dimension(80, 30));*/ 
-	    
-        /*editButton = new JButton("GEHITU");
-        editButton.setActionCommand("GEHITU");
-	    editButton.addActionListener(kontrolatzailea);
-	    editButton.setPreferredSize(new Dimension(130, 30));*/
+        deleteButton.setVisible(true);
+    	editButton.setVisible(true);
+    	backButton.setVisible(true);
+    	confirmButton.setVisible(false);
         
-        /*deleteButton = new JButton("EZABATU");
-        deleteButton.setActionCommand("EZABATU");
-	    deleteButton.addActionListener(kontrolatzailea);
-	    deleteButton.setPreferredSize(new Dimension(130, 30));*/      
+    	putzuBOTOIA.setVisible(false);
+    	putzuBOTOIA2.setVisible(false);
+    	putzuBOTOIA3.setVisible(false);
+    	haizegailuBOTOIA.setVisible(false);
+    	haizegailuBOTOIA2.setVisible(false);
+    	haizegailuBOTOIA3.setVisible(false);
+    	berogailuBOTOIA.setVisible(false);
+    	berogailuBOTOIA2.setVisible(false);
+    	berogailuBOTOIA3.setVisible(false);
         
-        /*confirmButton = new JButton("KONFIRMATU");
-        confirmButton.setActionCommand("KONFIRMATU");
-        confirmButton.addActionListener(kontrolatzailea);
-        confirmButton.setPreferredSize(new Dimension(130, 30)); 
-        confirmButton.setBackground(Color.GREEN);*/
-        confirmButton.setVisible(false);
-        
-        JLabel erabiltzaileIzena = new JLabel(izena.toUpperCase());
-        erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 20));
+        erabiltzaileIzena = new JLabel(izena.toUpperCase());  
+		erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 30));
         
         toolBar.add(backButton);
         toolBar.add(editButton);
         toolBar.add(deleteButton);
         toolBar.add(confirmButton);
         toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(putzuBOTOIA);
+        toolBar.add(putzuBOTOIA2);
+        toolBar.add(putzuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(haizegailuBOTOIA);
+        toolBar.add(haizegailuBOTOIA2);
+        toolBar.add(haizegailuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(berogailuBOTOIA);
+        toolBar.add(berogailuBOTOIA2);
+        toolBar.add(berogailuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
         toolBar.add(erabiltzaileIzena);
         toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(irtenButton);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth2));
+
+	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
+        mainPANTAILA.add(toolBar, BorderLayout.NORTH);
+
+	    mainPANTAILA.getContentPane().add(panel);
+	    mainPANTAILA.setVisible(true);
+	}
+	
+	public void mostrarPantallaHuecosCompletado(Erabiltzailea erabiltzailea) 
+	{
+		adminMapa = 0;
+	    mainPANTAILA = new JFrame("PANTAILA PRINTZIPALA");
+	    mainPANTAILA.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    mainPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH);
+	    mainPANTAILA.setUndecorated(true);
+
+	    JPanel panel = new JPanel(new BorderLayout());
+
+	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
+
+	    for (int i = 0; i < erabiltzailea.getBalioZerrenda().size(); i++) {
+	        String balio = erabiltzailea.getBalioZerrenda().get(i);
+	        
+	        if (balio != null) 
+	        {
+	        	if(i==0)
+	        	{
+		    	    botonesHuecosPanel.add(button);
+		    	    balio = balio.toLowerCase();
+		            irudiaJarri(balio, button);
+	        	}
+	        	else if(i==1)
+	        	{
+		    	    botonesHuecosPanel.add(button2);
+		    	    balio = balio.toLowerCase();
+		            irudiaJarri(balio, button2);
+	        	}
+
+	        	else if(i==2)
+	        	{
+		    	    botonesHuecosPanel.add(button3);
+		    	    balio = balio.toLowerCase();
+		            irudiaJarri(balio, button3);
+	        	}
+	        }
+	    }
+
+	    JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("EDEN HAVEN BABESETXEAK");
+        menuBar.add(fileMenu);
+        mainPANTAILA.setJMenuBar(menuBar);
+        
+        toolBar = new JToolBar();
+        
+        deleteButton.setVisible(true);
+    	editButton.setVisible(true);
+    	backButton.setVisible(true);
+    	confirmButton.setVisible(false);
+        
+    	putzuBOTOIA.setVisible(false);
+    	putzuBOTOIA2.setVisible(false);
+    	putzuBOTOIA3.setVisible(false);
+    	haizegailuBOTOIA.setVisible(false);
+    	haizegailuBOTOIA2.setVisible(false);
+    	haizegailuBOTOIA3.setVisible(false);
+    	berogailuBOTOIA.setVisible(false);
+    	berogailuBOTOIA2.setVisible(false);
+    	berogailuBOTOIA3.setVisible(false);
+        
+        erabiltzaileIzena = new JLabel(izena.toUpperCase());  
+		erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 30));
+        
+        toolBar.add(backButton);
+        toolBar.add(editButton);
+        toolBar.add(deleteButton);
+        toolBar.add(confirmButton);
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(putzuBOTOIA);
+        toolBar.add(putzuBOTOIA2);
+        toolBar.add(putzuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(haizegailuBOTOIA);
+        toolBar.add(haizegailuBOTOIA2);
+        toolBar.add(haizegailuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(berogailuBOTOIA);
+        toolBar.add(berogailuBOTOIA2);
+        toolBar.add(berogailuBOTOIA3);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(erabiltzaileIzena);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth));
+        toolBar.add(irtenButton);
+        toolBar.add(Box.createHorizontalStrut(spaceWidth2));
 
 	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
         mainPANTAILA.add(toolBar, BorderLayout.NORTH);
@@ -907,7 +957,7 @@ public class Printzipala implements PropertyChangeListener
 	
 	private void argazkiaSartu(String argazkia, int lekua) 
 	{
-	    erabiltzailea = getErabiltzailea(izena);
+	    erabiltzailea = modeloa.getErabiltzailea(izena);
 
 	    if (erabiltzailea != null) 
 	    {
@@ -931,7 +981,7 @@ public class Printzipala implements PropertyChangeListener
 	    }
 	}
 	
-	void irudiaJarri(String argazkia, JButton botoia)
+	private void irudiaJarri(String argazkia, JButton botoia)
 	{
 		int hostelWidth = 200;
         int hostelHeight = 200;
@@ -951,11 +1001,9 @@ public class Printzipala implements PropertyChangeListener
 	public void propertyChange(PropertyChangeEvent e) 
 	{
 	    String propiedad = e.getPropertyName();
-	    int lekua = (int) e.getNewValue();
+	    int lekua = (int) e.getNewValue();	    
 
-	    //String izena = izenaField.getText();
-
-	    /*Erabiltzailea*/ erabiltzailea = getErabiltzailea(izena);
+	    erabiltzailea = modeloa.getErabiltzailea(izena);
 
 	    if (erabiltzailea != null) 
 	    {
@@ -1006,151 +1054,11 @@ public class Printzipala implements PropertyChangeListener
 	                aukerenPANTAILA.dispose();
 	                break;
 	        }
-	        modeloa.start();
 	    }
-	}
-	
-	public void autenticarUsuario() 
-	{
-		/*String*/ izena = izenaField.getText();
-        String contrasena = new String(pasahitzaField.getPassword());        
-        
-		if (modeloa.autenticar(izena, contrasena)) 
-		{
-			loginPANTAILA.dispose(); //Login pantaila itxi
-
-            if (("admin".equals(izena)) && ("admin".equals(contrasena))) 
-            {
-                mostrarPantallaAdmin();
-            } 
-            else if ((isUsuarioRegistrado(izena)) && (isUsuarioContraseña(izena,contrasena)))
-            {           	
-            	/*Erabiltzailea*/ erabiltzailea = getErabiltzailea(izena);   
-            	if(erabiltzailea.behin==0)
-            	{          		                
-            		mostrarPantallaHuecos();
-            	}
-            	else
-            	{
-            		mostrarPantallaHuecosCompletado(erabiltzailea);
-            	}
-            }         
-            else if ("Ludok".equals(izena) && "dj".equals(contrasena)) 
-            {
-                ludokLovesU();
-            }
-            else 
-            {
-                JOptionPane.showMessageDialog(null, "Erabiltzaile hau ez da existitzen.");
-                loginPantailaErakutzi();
-            }
-        } 
-		else
-        {
-            JOptionPane.showMessageDialog(null, "Akatz bat gertatu da. Saiatu berriz.");
-        }
-	}
-	
-	public void mostrarPantallaHuecosCompletado(Erabiltzailea erabiltzailea) 
-	{
-		adminMapa = 0;
-	    mainPANTAILA = new JFrame("PANTAILA PRINTZIPALA");
-	    mainPANTAILA.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    mainPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH);
-	    mainPANTAILA.setUndecorated(true);
-
-	    JPanel panel = new JPanel(new BorderLayout());
-
-	    JPanel botonesHuecosPanel = new JPanel(new GridLayout(1, 3));
-
-	    for (int i = 0; i < erabiltzailea.getBalioZerrenda().size(); i++) {
-	        String balio = erabiltzailea.getBalioZerrenda().get(i);
-	        
-	        if (balio != null) 
-	        {
-	            /*JButton button = new JButton("Hutsunea " + (i + 1));
-	            button.addActionListener(kontrolatzailea);
-	            botonesHuecosPanel.add(button);
-
-	            balio = balio.toLowerCase();
-	            irudiaJarri(balio, button);*/
-	        	if(i==0)
-	        	{
-		    	    botonesHuecosPanel.add(button);
-		    	    balio = balio.toLowerCase();
-		            irudiaJarri(balio, button);
-	        	}
-	        	else if(i==1)
-	        	{
-		    	    botonesHuecosPanel.add(button2);
-		    	    balio = balio.toLowerCase();
-		            irudiaJarri(balio, button2);
-	        	}
-
-	        	else if(i==2)
-	        	{
-		    	    botonesHuecosPanel.add(button3);
-		    	    balio = balio.toLowerCase();
-		            irudiaJarri(balio, button3);
-	        	}
-	        }
-	    }
-
-	    JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("Archivo");
-        JMenuItem exitMenuItem = new JMenuItem("Salir");
-        exitMenuItem.setActionCommand("IRTEN");
-        
-        fileMenu.add(exitMenuItem);
-        menuBar.add(fileMenu);
-        mainPANTAILA.setJMenuBar(menuBar);
-        
-        JToolBar toolBar = new JToolBar();
-        
-        /*backButton = new JButton("ATZERA");
-        backButton.setActionCommand("ATRAS");
-	    backButton.addActionListener(kontrolatzailea);
-	    backButton.setPreferredSize(new Dimension(80, 30)); */
-	    
-        /*editButton = new JButton("GEHITU");
-        editButton.setActionCommand("GEHITU");
-	    editButton.addActionListener(kontrolatzailea);
-	    editButton.setPreferredSize(new Dimension(130, 30));
-	    editButton.setBackground(Color.BLUE);	*/ 
-        
-        /*deleteButton = new JButton("EZABATU");
-        deleteButton.setActionCommand("EZABATU");
-	    deleteButton.addActionListener(kontrolatzailea);
-	    deleteButton.setPreferredSize(new Dimension(130, 30));   
-        deleteButton.setBackground(Color.RED);*/     
-        
-        /*confirmButton = new JButton("KONFIRMATU");
-        confirmButton.setActionCommand("KONFIRMATU");
-        confirmButton.addActionListener(kontrolatzailea);
-        confirmButton.setPreferredSize(new Dimension(130, 30)); 
-        confirmButton.setBackground(Color.GREEN);*/
-        confirmButton.setVisible(false);
-        
-        JLabel erabiltzaileIzena = new JLabel(izena.toUpperCase());
-        erabiltzaileIzena.setFont(new Font("SansSerif", Font.BOLD, 20));
-        
-        toolBar.add(backButton);
-        toolBar.add(editButton);
-        toolBar.add(deleteButton);
-        toolBar.add(confirmButton);
-        toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(erabiltzaileIzena);
-        toolBar.add(Box.createHorizontalStrut(spaceWidth));
-
-	    panel.add(botonesHuecosPanel, BorderLayout.CENTER);
-        mainPANTAILA.add(toolBar, BorderLayout.NORTH);
-
-	    mainPANTAILA.getContentPane().add(panel);
-	    mainPANTAILA.setVisible(true);
 	}
 	
 	//EASTER EGG
-	void ludokLovesU() 
+	public void ludokLovesU() 
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 

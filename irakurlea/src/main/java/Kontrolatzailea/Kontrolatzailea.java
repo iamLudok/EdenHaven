@@ -4,12 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import Bista.Printzipala;
-import Modeloa.Erabiltzailea;
 import Modeloa.Modeloa;
 
-public class Kontrolatzailea implements ActionListener, KeyListener 
+public class Kontrolatzailea extends MouseAdapter implements ActionListener, KeyListener 
 {
 	Printzipala irudia;
 	Modeloa modeloa;
@@ -32,7 +33,7 @@ public class Kontrolatzailea implements ActionListener, KeyListener
 	{
 	    if ("SAIOAHASI".equals(e.getActionCommand())) 
 	    {
-	    	irudia.autenticarUsuario();
+	    	modeloa.autenticarUsuario();
 	    } 
 	    else if (("HUECO".equals(e.getActionCommand())) || (("HUECO2".equals(e.getActionCommand()))) || (("HUECO3".equals(e.getActionCommand()))))
 	    {
@@ -81,6 +82,9 @@ public class Kontrolatzailea implements ActionListener, KeyListener
 	    }
 	    else if ("GEHITU".equals(e.getActionCommand())) 
 	    {
+	    	irudia.deleteButton.setVisible(false);
+	    	irudia.editButton.setVisible(false);
+	    	irudia.backButton.setVisible(false);
 	    	irudia.confirmButton.setVisible(true);
 	    	irudia.mainPANTAILA.dispose();
 	        irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);	        
@@ -93,6 +97,9 @@ public class Kontrolatzailea implements ActionListener, KeyListener
 	    else if ("EZABATU".equals(e.getActionCommand())) 
 	    {
 	    	irudia.mostrarOpcionesEliminar();
+	    	irudia.deleteButton.setVisible(false);
+	    	irudia.editButton.setVisible(false);
+	    	irudia.backButton.setVisible(false);
 	    	irudia.confirmButton.setVisible(true);
 	    }
 	    else if ("POZO".equals(e.getActionCommand())) 
@@ -109,17 +116,14 @@ public class Kontrolatzailea implements ActionListener, KeyListener
 	    }
 	    else if ("EZKERREKOA".equals(e.getActionCommand())) 
 	    {	    	
-	    	//irudia.aukerenPANTAILA.dispose();
 	    	modeloa.bota("ezk", pos);	    
 	    } 
 	    else if ("ERDIKOA".equals(e.getActionCommand())) 
 	    {
-	    	//irudia.aukerenPANTAILA.dispose();
 	    	modeloa.bota("erd", pos);
 	    } 
 	    else if ("ESKUINEKOA".equals(e.getActionCommand())) 
 	    {
-	    	//irudia.aukerenPANTAILA.dispose();
 	    	modeloa.bota("esk", pos);
 	    }
 	}
@@ -144,4 +148,17 @@ public class Kontrolatzailea implements ActionListener, KeyListener
 	{
 		
 	}
+	
+	@Override
+    public void mouseClicked(MouseEvent e) 
+    {
+        if (irudia.argeliaBABESETXE.getBounds().contains(e.getPoint())) 
+        {
+        	modeloa.argeliaBABESETXEclick();
+        }
+        else if (irudia.groenlandiaBABESETXE.getBounds().contains(e.getPoint())) 
+        {
+        	modeloa.groenlandiaBABESETXEclick();
+        }
+    }
 }
