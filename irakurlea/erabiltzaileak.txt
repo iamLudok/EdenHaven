@@ -1,5 +1,3 @@
 islandia:1
 groenlandia:2
-ur:northface
-nago:tonta
 admin:admin

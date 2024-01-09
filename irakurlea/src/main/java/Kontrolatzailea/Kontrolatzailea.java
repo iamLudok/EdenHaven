@@ -2,12 +2,14 @@ package Kontrolatzailea;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import Bista.Printzipala;
 import Modeloa.Erabiltzailea;
 import Modeloa.Modeloa;
 
-public class Kontrolatzailea implements ActionListener
+public class Kontrolatzailea implements ActionListener, KeyListener 
 {
 	Printzipala irudia;
 	Modeloa modeloa;
@@ -107,15 +109,39 @@ public class Kontrolatzailea implements ActionListener
 	    }
 	    else if ("EZKERREKOA".equals(e.getActionCommand())) 
 	    {	    	
-	    	modeloa.bota("ezk", pos);	    	
+	    	//irudia.aukerenPANTAILA.dispose();
+	    	modeloa.bota("ezk", pos);	    
 	    } 
 	    else if ("ERDIKOA".equals(e.getActionCommand())) 
 	    {
+	    	//irudia.aukerenPANTAILA.dispose();
 	    	modeloa.bota("erd", pos);
 	    } 
 	    else if ("ESKUINEKOA".equals(e.getActionCommand())) 
 	    {
+	    	//irudia.aukerenPANTAILA.dispose();
 	    	modeloa.bota("esk", pos);
 	    }
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) 
+	{
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) 
+		{
+			irudia.loginButton.doClick();
+        }
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) 
+	{
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) 
+	{
+		
 	}
 }
