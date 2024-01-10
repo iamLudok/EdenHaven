@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import Bista.Printzipala;
@@ -24,11 +25,19 @@ public class Modeloa implements ActionListener
 	public final static String PROPIETATEA5 = "ezk";
 	public final static String PROPIETATEA6 = "erd";
 	public final static String PROPIETATEA7 = "esk";
+	public final static String PROPIETATEA8 = "berdeaTimer";
+	public final static String PROPIETATEA9 = "eliminar3Timer";
+	public final static String PROPIETATEA10 = "eliminarTimer";
+	public final static String PROPIETATEA11 = "eliminar2Timer";
 	
 	private Map<String, Erabiltzailea> erabiltzaileak; //ERABILTZAILEEN MAPA
 
 	PropertyChangeSupport konektorea;
-	private Timer timer=null;
+	public Timer timer=null;
+	public Timer berdeTimer = null;
+	public Timer timerEliminar = null;
+	public Timer timerEliminar2 = null;
+	public Timer timerEliminar3 = null;
 	Printzipala irudia;
 		
 	public Modeloa() 
@@ -36,6 +45,14 @@ public class Modeloa implements ActionListener
 		konektorea = new PropertyChangeSupport(this);
 		timer = new Timer(5000, this);
 	    timer.setActionCommand("Denbora");
+	    berdeTimer = new Timer(500, this);
+	    berdeTimer.setActionCommand("Denbora2");
+	    timerEliminar = new Timer(1000, this);
+	    timerEliminar.setActionCommand("Denbora4");
+	    timerEliminar2 = new Timer(1000, this);
+	    timerEliminar2.setActionCommand("Denbora5");
+	    timerEliminar3 = new Timer(500, this);
+	    timerEliminar3.setActionCommand("Denbora3");
 	    irudia = null;
 	    
 	    erabiltzaileak = new HashMap<>(); //ERABILTZAILEEN HASH MAPA
@@ -84,22 +101,22 @@ public class Modeloa implements ActionListener
 	}
 	
 	public void argeliaBABESETXEclick()
-	{
-		irudia.adminFrame.dispose();
+	{		
 		irudia.izena = "argelia";
 		irudia.erabiltzailea = getErabiltzailea("argelia");
 		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
+		irudia.adminFrame.dispose();
         irudia.adminMapa = 1;
 	}
 	
 	public void groenlandiaBABESETXEclick()
-	{
-		irudia.adminFrame.dispose();
+	{		
 		irudia.izena = "groenlandia";
 		irudia.erabiltzailea = getErabiltzailea("groenlandia");
 		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
+		irudia.adminFrame.dispose();
     	irudia.adminMapa = 1;
-	}
+	}		
 	
 	public void autenticarUsuario() 
 	{
@@ -110,13 +127,14 @@ public class Modeloa implements ActionListener
 		{			
 
             if (("admin".equals(irudia.izena)) && ("admin".equals(contrasena))) 
-            {
-            	irudia.loginPANTAILA.dispose(); 
-                irudia.mostrarPantallaAdmin();
+            {       
+            	//timerEliminar3.setRepeats(false);
+            	//timerEliminar3.start(); 
+                irudia.mostrarPantallaAdmin(); 
+                irudia.loginPANTAILA.dispose();
             } 
-            else if ((isUsuarioRegistrado(irudia.izena)) && (isUsuarioContraseña(irudia.izena,contrasena)))
-            {
-            	irudia.loginPANTAILA.dispose(); 
+            else if (isUsuarioContraseña(irudia.izena,contrasena))
+            {            	
             	irudia.erabiltzailea = getErabiltzailea(irudia.izena);   
             	if(irudia.erabiltzailea.behin==0)
             	{          		                
@@ -125,17 +143,23 @@ public class Modeloa implements ActionListener
             	else
             	{
             		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
-            	}
+            	}  
+            	timerEliminar3.setRepeats(false);
+    	    	timerEliminar3.start();
             }         
             else if ("Ludok".equals(irudia.izena) && "dj".equals(contrasena)) 
-            {
-            	irudia.loginPANTAILA.dispose(); 
+            {           	
                 irudia.ludokLovesU();
+                irudia.loginPANTAILA.dispose();
+                //timerEliminar3.setRepeats(false);
+    	    	//timerEliminar3.start();
             }
             else 
             {
-                JOptionPane.showMessageDialog(null, "Erabiltzaile hau ez da existitzen.");
+                JOptionPane.showMessageDialog(null, "Pasahitza ez da zuzena");
             }
+            //timerEliminar3.setRepeats(false);
+	    	//timerEliminar3.start();
         } 
 		else
         {
@@ -204,23 +228,6 @@ public class Modeloa implements ActionListener
 			}
 		}
 	}
-
-	public void start() 
-	{
-	    if (timer != null)
-	    {
-	        timer.start();
-	    }
-	}
-	
-	public void stop() 
-	{
-		if(timer != null) 
-		{
-			timer.stop();
-			timer = null;
-		}
-	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) 
@@ -232,6 +239,18 @@ public class Modeloa implements ActionListener
 	        case "Denbora":
 	            konektorea.firePropertyChange(PROPIETATEA4, 0, 1);
 	            break;      
+	        case "Denbora2":
+	            konektorea.firePropertyChange(PROPIETATEA8, 0, 1);
+	            break;
+	        case "Denbora3":
+	            konektorea.firePropertyChange(PROPIETATEA9, 0, 1);
+	            break;
+	        case "Denbora4":
+	            konektorea.firePropertyChange(PROPIETATEA10, 0, 1);
+	            break;
+	        case "Denbora5":
+	            konektorea.firePropertyChange(PROPIETATEA11, 0, 1);
+	            break;
 		}
 	}
 }

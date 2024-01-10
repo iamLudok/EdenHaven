@@ -1,3 +1,2 @@
 argelia:1
 groenlandia:2
-admin:admin

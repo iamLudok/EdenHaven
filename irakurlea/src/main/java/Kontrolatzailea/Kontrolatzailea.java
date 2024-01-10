@@ -6,6 +6,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import Bista.Printzipala;
 import Modeloa.Modeloa;
@@ -27,10 +31,29 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	{
 		this.irudia = irudia;
 	}
-
+	
+	/*Timer timerEliminar2 = new Timer(1000, (ActionEvent evt) -> 
+	{	        
+        irudia.mainPANTAILA2.dispose();
+	});*/
+	//Timer timerEliminar = new Timer(1000, (ActionEvent evt) -> 
+	//{
+		/*timerEliminar2.setRepeats(false);
+    	timerEliminar2.start();
+		irudia.mainPANTAILA.dispose();  
+		if(zer=="gehitu")
+		{
+			irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);
+		}
+		else if(zer=="konfirmatu") 
+		{
+			irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
+		}*/
+	//});
+	
 	@Override
 	public void actionPerformed(ActionEvent e) 
-	{
+	{	
 	    if ("SAIOAHASI".equals(e.getActionCommand())) 
 	    {
 	    	modeloa.autenticarUsuario();
@@ -65,34 +88,42 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	    {
 	    	
 	    	if(irudia.adminMapa==1)
-	    	{
-	    		irudia.mainPANTAILA.dispose();
+	    	{	    		
 	    		irudia.mostrarPantallaAdmin();
+	    		irudia.mainPANTAILA.dispose();
 	    	}
 	    	else if(irudia.adminMapa==2)
-	    	{
-	    		irudia.adminFrame.dispose();
+	    	{	    		
 	    		irudia.loginPantailaErakutzi();
+	    		irudia.adminFrame.dispose();
 	    	}
 	    	else
-	    	{
-	    		irudia.mainPANTAILA.dispose();
+	    	{	    		
 	    		irudia.loginPantailaErakutzi();
+	    		irudia.mainPANTAILA.dispose();
 	    	}	        
 	    }
 	    else if ("GEHITU".equals(e.getActionCommand())) 
 	    {
-	    	irudia.deleteButton.setVisible(false);
-	    	irudia.editButton.setVisible(false);
-	    	irudia.backButton.setVisible(false);
-	    	irudia.confirmButton.setVisible(true);
-	    	irudia.mainPANTAILA.dispose();
-	        irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);	        
+	    	modeloa.timerEliminar.setRepeats(false);
+	    	modeloa.timerEliminar.start();
+	    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
+	    	//SwingUtilities.invokeLater(() -> {
+	    	//irudia.mainPANTAILA.dispose();    	
+	        //irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);	        
+	        //irudia.mainPANTAILA2.dispose();
+	    	//});
+	    	irudia.zer = "gehitu";
 	    }
 	    else if ("KONFIRMATU".equals(e.getActionCommand())) 
 	    {
-	    	irudia.mainPANTAILA.dispose();
-	        irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
+	    	//irudia.mainPANTAILA.dispose();
+	    	modeloa.berdeTimer.stop();
+	    	modeloa.timerEliminar.setRepeats(false);
+	    	modeloa.timerEliminar.start();
+	    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
+		    //irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);	
+	    	irudia.zer = "konfirmatu";
 	    }
 	    else if ("EZABATU".equals(e.getActionCommand())) 
 	    {
@@ -103,27 +134,45 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	    	irudia.confirmButton.setVisible(true);
 	    }
 	    else if ("POZO".equals(e.getActionCommand())) 
-	    {	    	
+	    {	
+	    	if(modeloa.timer!=null)
+	    	{
+	    		modeloa.timer.start();
+	    	}
+	    	
 	    	modeloa.bota("pozo", pos);	    	
 	    } 
 	    else if ("VENTILADOR".equals(e.getActionCommand())) 
 	    {
+	    	if(modeloa.timer!=null)
+	    	{
+	    		modeloa.timer.start();
+	    	}
+	    	
 	    	modeloa.bota("ventilador", pos);
 	    } 
 	    else if ("ESTUFA".equals(e.getActionCommand())) 
 	    {
+	    	if(modeloa.timer!=null)
+	    	{
+	    		modeloa.timer.start();
+	    	}
+	    	
 	    	modeloa.bota("estufa", pos);
 	    }
 	    else if ("EZKERREKOA".equals(e.getActionCommand())) 
-	    {	    	
+	    {
+	    	modeloa.berdeTimer.start();
 	    	modeloa.bota("ezk", pos);	    
 	    } 
 	    else if ("ERDIKOA".equals(e.getActionCommand())) 
 	    {
+	    	modeloa.berdeTimer.start();
 	    	modeloa.bota("erd", pos);
 	    } 
 	    else if ("ESKUINEKOA".equals(e.getActionCommand())) 
 	    {
+	    	modeloa.berdeTimer.start();
 	    	modeloa.bota("esk", pos);
 	    }
 	}
