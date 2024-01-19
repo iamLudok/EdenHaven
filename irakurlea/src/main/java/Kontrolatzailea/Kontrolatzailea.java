@@ -1,62 +1,48 @@
 package Kontrolatzailea;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.UIManager;
 
 import Bista.Printzipala;
 import Modeloa.Modeloa;
 
 public class Kontrolatzailea extends MouseAdapter implements ActionListener, KeyListener 
 {
-	Printzipala irudia;
-	Modeloa modeloa;
-	int pos;
+	//MVC
+	Printzipala irudia; //Bista
+	Modeloa modeloa; //Modeloa
 	
+	//INT
+	int pos; //Posizioa
+	
+	//KONSTRUKTOREA
 	public Kontrolatzailea(Modeloa modeloa) 
 	{
-		irudia = null;
-		this.modeloa = modeloa;
-		pos = 0;
+		irudia = null; ///Bista
+		this.modeloa = modeloa; //Modeloa
+		pos = 0; //Posizioa
 	}
 	
+	//BISTA
 	public void setIrudia (Printzipala irudia) 
 	{
 		this.irudia = irudia;
 	}
 	
-	/*Timer timerEliminar2 = new Timer(1000, (ActionEvent evt) -> 
-	{	        
-        irudia.mainPANTAILA2.dispose();
-	});*/
-	//Timer timerEliminar = new Timer(1000, (ActionEvent evt) -> 
-	//{
-		/*timerEliminar2.setRepeats(false);
-    	timerEliminar2.start();
-		irudia.mainPANTAILA.dispose();  
-		if(zer=="gehitu")
-		{
-			irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);
-		}
-		else if(zer=="konfirmatu") 
-		{
-			irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);
-		}*/
-	//});
-	
 	@Override
+	//ACTION PERFORMED
 	public void actionPerformed(ActionEvent e) 
 	{	
-	    if ("SAIOAHASI".equals(e.getActionCommand())) 
+	    if ("SAIOAHASI".equals(e.getActionCommand()))
 	    {
-	    	modeloa.autenticarUsuario();
+	    	modeloa.autenticarUsuario(); //Saioa hasi botoia sakatzean erabiltzailea ea ondo jarri duzun analisatuko du
 	    } 
 	    else if (("HUECO".equals(e.getActionCommand())) || (("HUECO2".equals(e.getActionCommand()))) || (("HUECO3".equals(e.getActionCommand()))))
 	    {
@@ -64,26 +50,26 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	    	{
 		    	case "HUECO":
 		    	{
-		    		pos = 1;
+		    		pos = 1; //Ezkerreko botoia aukeratu da
 		    		break;
 		    	}
 		    	case "HUECO2":
 		    	{
-		    		pos = 2;
+		    		pos = 2; //Erdiko botoia aukeratu da
 		    		break;
 		    	}
 		    	case "HUECO3":
 		    	{
-		    		pos = 3;
+		    		pos = 3; //Eskuineko botoia aukeratu da
 		    		break;
 		    	}
 	    	}
-	    	irudia.mostrarOpciones();
+	    	irudia.mostrarOpciones(irudia.hizkuntza); //Argazkien aukerak erakuzten dira
 	    } 
-	    else if ("IRTEN".equals(e.getActionCommand())) 
+	    /*else if ("IRTEN".equals(e.getActionCommand())) 
 	    {
-	    	System.exit(0);
-	    }
+	    	System.exit(0); //
+	    }*/
 	    else if ("ATRAS".equals(e.getActionCommand())) 
 	    {
 	    	
@@ -105,8 +91,8 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	    }
 	    else if ("GEHITU".equals(e.getActionCommand())) 
 	    {
-	    	modeloa.timerEliminar.setRepeats(false);
-	    	modeloa.timerEliminar.start();
+	    	modeloa.timer3.setRepeats(false);
+	    	modeloa.timer3.start();
 	    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
 	    	//SwingUtilities.invokeLater(() -> {
 	    	//irudia.mainPANTAILA.dispose();    	
@@ -118,9 +104,9 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	    else if ("KONFIRMATU".equals(e.getActionCommand())) 
 	    {
 	    	//irudia.mainPANTAILA.dispose();
-	    	modeloa.berdeTimer.stop();
-	    	modeloa.timerEliminar.setRepeats(false);
-	    	modeloa.timerEliminar.start();
+	    	modeloa.timer2.stop();
+	    	modeloa.timer3.setRepeats(false);
+	    	modeloa.timer3.start();
 	    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
 		    //irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);	
 	    	irudia.zer = "konfirmatu";
@@ -128,80 +114,88 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	    else if ("EZABATU".equals(e.getActionCommand())) 
 	    {
 	    	irudia.mostrarOpcionesEliminar();
-	    	irudia.deleteButton.setVisible(false);
-	    	irudia.editButton.setVisible(false);
-	    	irudia.backButton.setVisible(false);
-	    	irudia.confirmButton.setVisible(true);
+	    	//irudia.deleteButton.setVisible(false);
+	    	irudia.deleteButton.setBackground(new Color(120, 120, 120));
+	    	//irudia.editButton.setVisible(false);
+	    	irudia.editButton.setBackground(new Color(120, 120, 120));
+	    	//irudia.backButton.setVisible(false);
+	    	irudia.backButton.setBackground(new Color(120, 120, 120));
+	    	//irudia.confirmButton.setVisible(true);
+	    	irudia.confirmButton.setBackground(UIManager.getColor("Button.background"));
 	    }
-	    else if ("POZO".equals(e.getActionCommand())) 
+	    else if ("PUTZUA".equals(e.getActionCommand())) 
 	    {	
 	    	if(modeloa.timer!=null)
 	    	{
 	    		modeloa.timer.start();
 	    	}
 	    	
-	    	modeloa.bota("pozo", pos);	    	
+	    	modeloa.bota("putzua", pos);	    	
 	    } 
-	    else if ("VENTILADOR".equals(e.getActionCommand())) 
+	    else if ("HAIZEGAILUA".equals(e.getActionCommand())) 
 	    {
 	    	if(modeloa.timer!=null)
 	    	{
 	    		modeloa.timer.start();
 	    	}
 	    	
-	    	modeloa.bota("ventilador", pos);
+	    	modeloa.bota("haizegailua", pos);
 	    } 
-	    else if ("ESTUFA".equals(e.getActionCommand())) 
+	    else if ("BEROGAILUA".equals(e.getActionCommand())) 
 	    {
 	    	if(modeloa.timer!=null)
 	    	{
 	    		modeloa.timer.start();
 	    	}
 	    	
-	    	modeloa.bota("estufa", pos);
+	    	modeloa.bota("berogailua", pos);
 	    }
 	    else if ("EZKERREKOA".equals(e.getActionCommand())) 
 	    {
-	    	modeloa.berdeTimer.start();
+	    	modeloa.timer2.start();
 	    	modeloa.bota("ezk", pos);	    
 	    } 
 	    else if ("ERDIKOA".equals(e.getActionCommand())) 
 	    {
-	    	modeloa.berdeTimer.start();
+	    	modeloa.timer2.start();
 	    	modeloa.bota("erd", pos);
 	    } 
 	    else if ("ESKUINEKOA".equals(e.getActionCommand())) 
 	    {
-	    	modeloa.berdeTimer.start();
+	    	modeloa.timer2.start();
 	    	modeloa.bota("esk", pos);
 	    }
 	}
 
 	@Override
+	//KEY PRESSED
 	public void keyPressed(KeyEvent e) 
 	{
-		if (e.getKeyCode() == KeyEvent.VK_ENTER) 
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) //ENTER BOTOIA SAKATU
 		{
-			irudia.loginButton.doClick();
+			irudia.loginButton.doClick(); //Login botoia klikatearen berdina egiten du
         }
 	}
 
 	@Override
+	//HUTSIK
 	public void keyReleased(KeyEvent e) 
 	{
 		
 	}
 
 	@Override
+	//HUTSIK
 	public void keyTyped(KeyEvent e) 
 	{
 		
 	}
 	
 	@Override
+	//MOUSE CLICKED EA ARGAZKIA KLIKATU DUZUN EDO EZ BEGIRATZEN DU
     public void mouseClicked(MouseEvent e) 
     {
-        if (irudia.argeliaBABESETXE.getBounds().contains(e.getPoint())) 
+        if (irudia.argeliaBABESETXE.getBounds().contains(e.getPoint()))
         {
         	modeloa.argeliaBABESETXEclick();
         }

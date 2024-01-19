@@ -4,16 +4,20 @@ import java.util.ArrayList;
 
 public class Erabiltzailea 
 {
-    ArrayList<String> balioZerrenda; //Hutsuneetako argazkiak gorde
+	//ZEIN ARGAZKI GORDETZEN DUGUN BOTOI BAKOITZEAN
+    ArrayList<String> balioZerrenda;
     
+    //STRING
     private String izena; //Erabiltzailearen izena
     private String pasahitza; //Erabiltzailearen pasahitza
-    public int behin = 0;
     
-    public int buttonBEHIN = 0; //EZKERREKOA
-    public int button2BEHIN = 0; //ERDIKOA
-    public int button3BEHIN = 0; //ESKUINEKOA
+    //INT
+    public int behin = 0; //Lehenengo aldia erabiltzailea sartzen duena   
+    public int buttonBEHIN = 0; //Ezkerreko botoia behin
+    public int button2BEHIN = 0; //Erdiko botoia behin
+    public int button3BEHIN = 0; //Esluineko botoia behin
 
+    //KONSTRUKTOREA
     public Erabiltzailea()
     {
       balioZerrenda = new ArrayList<>();
@@ -22,35 +26,34 @@ public class Erabiltzailea
       balioZerrenda.add(null); 
     }
     
-    //BALIO ZERRENDAREN GET ETA SET
-    public ArrayList<String> getBalioZerrenda() 
+    //GET-AK
+    public ArrayList<String> getBalioZerrenda() //Balio Zerrenda
     {
         return balioZerrenda;
     }
-
-    public void setBalioZerrendaAtIndex(int index, String value) 
-    {
-    	balioZerrenda.set(index,value); 
-    }
     
-    //PASAHITZAREN GET ETA SET
-    public String getPasahitza() 
+    public String getPasahitza() //Pasahitza
     {
         return pasahitza;
     }
-
-	public void setPasahitza(String pasahitza) 
-	{
-		this.pasahitza = pasahitza;
-	}
-
-	//IZENAREN GET ETA SET
-	public String getIzena()
+    
+    public String getIzena() //Izena
 	{
 		return izena;
 	}
 
-	public void setIzena(String izena) 
+    //SET-AK
+    public void setBalioZerrendaAtIndex(int index, String value) //Balio Zerrenda
+    {
+    	balioZerrenda.set(index,value); 
+    }
+
+	public void setPasahitza(String pasahitza) //Pasahitza
+	{
+		this.pasahitza = pasahitza;
+	}
+
+	public void setIzena(String izena) //Izena
 	{
 		this.izena = izena;
 	}		

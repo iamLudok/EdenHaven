@@ -1,2 +1,3 @@
 argelia:1
-groenlandia:2
+suecia:2
+libia:3

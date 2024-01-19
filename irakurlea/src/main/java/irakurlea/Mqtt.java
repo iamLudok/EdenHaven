@@ -8,46 +8,61 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class Mqtt implements MqttCallback {
-
-    public static final String BROKER = "tcp://localhost:1883";
+public class Mqtt implements MqttCallback 
+{
+	/*MAKINA VIRTUALAREN BROKER: 172.20.10.4 / ORDENAGAILUKO BROKER: localhost*/
+    public static final String BROKER = "tcp://172.20.10.4:1883"; 
     public static final String CLENT_ID = "TemperatureSimulator";
-    public static final int QoS = 2;
-
-    public static final String TOPIC_TEMPERATURE = "Sensor/Temperature";
+    public static final int QoS = 1;
+    
+    //TOPIKOAK
+    public static final String TOPIC_TEMPERATURE = "ADCDatuak";
     public static final String TOPIC_TEMPERATURE2 = "Sensor/Temperature2";
     public static final String TOPIC_TEMPERATURE3 = "Sensor/Temperature3";
-    public static final String TOPIC_WATER = "Sensor/Water";
+    public static final String TOPIC_WATER = "Sensor/Water"; /**/
     public static final String TOPIC_WATER2 = "Sensor/Water2";
     public static final String TOPIC_WATER3 = "Sensor/Water3";
     public static final String TOPIC_GAS = "Sensor/Gas";
     public static final String TOPIC_GAS2 = "Sensor/Gas2";
     public static final String TOPIC_GAS3 = "Sensor/Gas3";
    
+    //BEZEROA
     private final MqttClient client;
 
-    public volatile double valueTemperature;
-    public volatile double valueTemperature2;
-    public volatile double valueTemperature3;
-    public volatile double valueWater;
-    public volatile double valueWater2;
-    public volatile double valueWater3;
-    public volatile double valueGas;  
-    public volatile double valueGas2; 
-    public volatile double valueGas3; 
+    //STRING
+    public volatile String valueTemperature;
+    public volatile String valueTemperature2;
+    public volatile String valueTemperature3;
+    public volatile String valueGas;  
+    public volatile String valueGas2; 
+    public volatile String valueGas3; 
+    
+    public volatile String adc1;  
+    public volatile String adc2; 
+    public volatile String adc3; 
+    
+    //INT
+    public volatile int valueWater;
+    public volatile int valueWater2;
+    public volatile int valueWater3;
    
-
+    //KONSTRUKTOREA
     public Mqtt(String broker, String clientId) throws MqttException 
     {
-    	this.valueTemperature = 0.0;
-        this.valueTemperature2 = 0.0;
-        this.valueTemperature3 = 0.0;
-        this.valueWater = 0.0;
-        this.valueWater2 = 0.0;
-        this.valueWater3 = 0.0;
-        this.valueGas = 0.0;
-        this.valueGas2 = 0.0;
-        this.valueGas3 = 0.0;
+    	//ALDAGAIAK HASIERATU
+    	this.valueTemperature = "NORMALA";
+        this.valueTemperature2 = "NORMALA";
+        this.valueTemperature3 = "NORMALA";
+        this.valueWater = 0;
+        this.valueWater2 = 0;
+        this.valueWater3 = 0;
+        this.valueGas = "TRANKIL";
+        this.valueGas2 = "TRANKIL";
+        this.valueGas3 = "TRANKIL";
+        
+        this.adc1 = "0";
+        this.adc2 = "0";
+        this.adc3 = "0";
      
         MemoryPersistence persistence = new MemoryPersistence();
              
@@ -56,6 +71,7 @@ public class Mqtt implements MqttCallback {
         connOpts.setCleanSession(true);
         this.client.setCallback(this);
    
+        //MQTT HASIERATU
         System.out.println("[MQTT] Connecting to broker: " + broker);
         this.client.connect(connOpts);
         System.out.println("[MQTT] Connected");
@@ -77,20 +93,22 @@ public class Mqtt implements MqttCallback {
         client.subscribe(TOPIC_GAS2, QoS);
         System.out.println("[MQTT] Subscribe " + TOPIC_GAS3);
         client.subscribe(TOPIC_GAS3, QoS);
-        System.out.println("[MQTT] Ready");
-        
+        System.out.println("[MQTT] Ready");       
     }
 
+    //KONSTRUKTOREA
     public Mqtt() throws MqttException 
     {
         this(BROKER, CLENT_ID);
     }
 
+    //DESKONEKTATZEN BALDIN BADA
     public void disconnect() throws MqttException 
     {
         this.client.disconnect();
     }
 
+    //PUBLIKATU
     void publish(String topic, String content) throws MqttException 
     {
         MqttMessage message = new MqttMessage(content.getBytes());
@@ -98,51 +116,68 @@ public class Mqtt implements MqttCallback {
         this.client.publish(topic, message);
     }
 
-    public double getTemperature() 
+    //GET-AK
+    public String getTemperature() 
     {
         return this.valueTemperature;
     }
     
-    public double getTemperature2() 
+    public String getTemperature2() 
     {
         return this.valueTemperature2;
     }
     
-    public double getTemperature3() 
+    public String getTemperature3() 
     {
         return this.valueTemperature3;
     }
 
-    public double getWater() 
+    public int getWater() 
     {
         return this.valueWater;
     }
     
-    public double getWater2() 
+    public int getWater2() 
     {
         return this.valueWater2;
     }
     
-    public double getWater3() 
+    public int getWater3() 
     {
         return this.valueWater3;
     }
   
-    public double getGas() 
+    public String getGas() 
     {
         return this.valueGas;
     }  
     
-    public double getGas2() 
+    public String getGas2() 
     {
         return this.valueGas2;
     } 
     
-    public double getGas3() 
+    public String getGas3() 
     {
         return this.valueGas3;
     } 
+    
+    public String getadc1() 
+    {
+        return this.adc1;
+    }
+    
+    public String getadc2() 
+    {
+        return this.adc2;
+    }
+    
+    public String getadc3() 
+    {
+        return this.adc3;
+    }
 
+    //KONEXIOA GALTZEN BALDIN BADA
     @Override
     public void connectionLost(Throwable cause) 
     {
@@ -150,12 +185,14 @@ public class Mqtt implements MqttCallback {
         System.exit(1);
     }
 
+    //HUTSIK
     @Override
     public void deliveryComplete(IMqttDeliveryToken token)
     {
     	
     }
 
+    //MEZUA HELTZEAN CONSOLAN IDAZTEN DU
     @Override
     public void messageArrived(String topic, MqttMessage message) throws MqttException 
     {
@@ -164,44 +201,52 @@ public class Mqtt implements MqttCallback {
         switch(topic) 
         {
         case TOPIC_TEMPERATURE:
-            this.valueTemperature = Double.parseDouble(content);
-            System.out.println("Temperatura: "+this.valueTemperature);
+        	String[] timeParts = content.split(":");
+
+            adc1 = timeParts[0];
+            adc2 = timeParts[1];
+            adc3 = timeParts[2];
+            System.out.println("ADC1: "+this.adc1);
+            System.out.println("ADC2: "+this.adc2);
+            System.out.println("ADC3: "+this.adc3);
+
+            /*this.valueTemperature = content;
+            System.out.println("Temperatura: "+this.valueTemperature);*/
             break;
         case TOPIC_TEMPERATURE2:
-            this.valueTemperature2 = Double.parseDouble(content);
+            this.valueTemperature2 = content;
             System.out.println("Temperatura2: "+this.valueTemperature2);
             break;
         case TOPIC_TEMPERATURE3:
-            this.valueTemperature3 = Double.parseDouble(content);
+            this.valueTemperature3 = content;
             System.out.println("Temperatura3: "+this.valueTemperature3);
             break;
         case TOPIC_WATER:
-            this.valueWater = Double.parseDouble(content);
+            this.valueWater = Integer.parseInt(content);
             System.out.println("Agua: "+this.valueWater);
             break;
         case TOPIC_WATER2:
-            this.valueWater2 = Double.parseDouble(content);
+            this.valueWater2 = Integer.parseInt(content);
             System.out.println("Agua2: "+this.valueWater2);
             break;
         case TOPIC_WATER3:
-            this.valueWater3 = Double.parseDouble(content);
+            this.valueWater3 = Integer.parseInt(content);
             System.out.println("Agua3: "+this.valueWater3);
             break;
         case TOPIC_GAS:
-            this.valueGas = Double.parseDouble(content);
+            this.valueGas = content;
             System.out.println("Gas: "+this.valueGas);
             break;
         case TOPIC_GAS2:
-            this.valueGas2 = Double.parseDouble(content);
+            this.valueGas2 = content;
             System.out.println("Gas2: "+this.valueGas2);
             break;
         case TOPIC_GAS3:
-            this.valueGas3 = Double.parseDouble(content);
+            this.valueGas3 = content;
             System.out.println("Gas3: "+this.valueGas3);
             break;
         default:
             break;
         }
     }
-
 }
