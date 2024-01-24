@@ -1,60 +1,38 @@
 package Modeloa;
 
-import java.util.ArrayList;
-
-public class Erabiltzailea 
+//PROGRAMA ERABILIKO DUTEN ERABILTZAILEAK
+public class Erabiltzailea extends DatuakGordePlantilla
 {
-	//ZEIN ARGAZKI GORDETZEN DUGUN BOTOI BAKOITZEAN
-    ArrayList<String> balioZerrenda;
-    
-    //STRING
-    private String izena; //Erabiltzailearen izena
+	//STRING
     private String pasahitza; //Erabiltzailearen pasahitza
     
     //INT
     public int behin = 0; //Lehenengo aldia erabiltzailea sartzen duena   
     public int buttonBEHIN = 0; //Ezkerreko botoia behin
     public int button2BEHIN = 0; //Erdiko botoia behin
-    public int button3BEHIN = 0; //Esluineko botoia behin
+    public int button3BEHIN = 0; //Eskuineko botoia behin
+    public int backButtonBEHIN = 0; //Atzera botoia aktibatu
+    public int editButtonBEHIN = 0; //Gehitu botoia aktibatu
+    public int deleteButtonBEHIN = 0; //Ezabatu botoia aktibatu
+    public int confirmButtonBEHIN = 0; //Konfirmatu botoia aktibatu
 
     //KONSTRUKTOREA
     public Erabiltzailea()
     {
-      balioZerrenda = new ArrayList<>();
-      balioZerrenda.add(null); 
-      balioZerrenda.add(null); 
-      balioZerrenda.add(null); 
+      balioZerrenda.add(null); //Balio zerrendari 0 posizioan null bat jarri
+      balioZerrenda.add(null); //Balio zerrendari 1 posizioan null bat jarri
+      balioZerrenda.add(null); //Balio zerrendari 2 posizioan null bat jarri 
     }
     
-    //GET-AK
-    public ArrayList<String> getBalioZerrenda() //Balio Zerrenda
-    {
-        return balioZerrenda;
-    }
-    
-    public String getPasahitza() //Pasahitza
+    //GET PASAHITZA  
+    public String getPasahitza()
     {
         return pasahitza;
     }
-    
-    public String getIzena() //Izena
-	{
-		return izena;
-	}
 
-    //SET-AK
-    public void setBalioZerrendaAtIndex(int index, String value) //Balio Zerrenda
-    {
-    	balioZerrenda.set(index,value); 
-    }
-
-	public void setPasahitza(String pasahitza) //Pasahitza
+    //SET PASAHITZA
+	public void setPasahitza(String pasahitza) 
 	{
 		this.pasahitza = pasahitza;
 	}
-
-	public void setIzena(String izena) //Izena
-	{
-		this.izena = izena;
-	}		
 }

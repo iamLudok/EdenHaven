@@ -1,12 +1,7 @@
 package irakurlea;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.*;
 
 public class Mqtt implements MqttCallback 
 {
@@ -16,49 +11,49 @@ public class Mqtt implements MqttCallback
     public static final int QoS = 1;
     
     //TOPIKOAK
-    public static final String TOPIC_TEMPERATURE = "ADCDatuak";
-    public static final String TOPIC_TEMPERATURE2 = "Sensor/Temperature2";
-    public static final String TOPIC_TEMPERATURE3 = "Sensor/Temperature3";
-    public static final String TOPIC_WATER = "Sensor/Water"; /**/
-    public static final String TOPIC_WATER2 = "Sensor/Water2";
-    public static final String TOPIC_WATER3 = "Sensor/Water3";
-    public static final String TOPIC_GAS = "Sensor/Gas";
-    public static final String TOPIC_GAS2 = "Sensor/Gas2";
-    public static final String TOPIC_GAS3 = "Sensor/Gas3";
+    public static final String TOPIC_ADC1 = "ADC1";
+    //public static final String TOPIC_TEMPERATURE2 = "Sensor/Temperature2";
+    //public static final String TOPIC_TEMPERATURE3 = "Sensor/Temperature3";
+    public static final String TOPIC_ADC2 = "ADC2";
+    //public static final String TOPIC_WATER2 = "Sensor/Water2";
+    //public static final String TOPIC_WATER3 = "Sensor/Water3";
+    public static final String TOPIC_ADC3 = "ADC3";
+    //public static final String TOPIC_GAS2 = "Sensor/Gas2";
+    //public static final String TOPIC_GAS3 = "Sensor/Gas3";
    
     //BEZEROA
     private final MqttClient client;
 
     //STRING
-    public volatile String valueTemperature;
-    public volatile String valueTemperature2;
-    public volatile String valueTemperature3;
-    public volatile String valueGas;  
-    public volatile String valueGas2; 
-    public volatile String valueGas3; 
+    //public volatile String valueTemperature;
+    //public volatile String valueTemperature2;
+    //public volatile String valueTemperature3;
+    //public volatile String valueGas;  
+    //public volatile String valueGas2; 
+    //public volatile String valueGas3; 
     
     public volatile String adc1;  
     public volatile String adc2; 
     public volatile String adc3; 
     
     //INT
-    public volatile int valueWater;
-    public volatile int valueWater2;
-    public volatile int valueWater3;
+    //public volatile int valueWater;
+    //public volatile int valueWater2;
+    //public volatile int valueWater3;
    
     //KONSTRUKTOREA
     public Mqtt(String broker, String clientId) throws MqttException 
     {
     	//ALDAGAIAK HASIERATU
-    	this.valueTemperature = "NORMALA";
-        this.valueTemperature2 = "NORMALA";
-        this.valueTemperature3 = "NORMALA";
-        this.valueWater = 0;
-        this.valueWater2 = 0;
-        this.valueWater3 = 0;
-        this.valueGas = "TRANKIL";
-        this.valueGas2 = "TRANKIL";
-        this.valueGas3 = "TRANKIL";
+    	//this.valueTemperature = "NORMALA";
+        //this.valueTemperature2 = "NORMALA";
+        //this.valueTemperature3 = "NORMALA";
+        //this.valueWater = 0;
+        //this.valueWater2 = 0;
+        //this.valueWater3 = 0;
+        //this.valueGas = "TRANKIL";
+        //this.valueGas2 = "TRANKIL";
+        //this.valueGas3 = "TRANKIL";
         
         this.adc1 = "0";
         this.adc2 = "0";
@@ -75,24 +70,24 @@ public class Mqtt implements MqttCallback
         System.out.println("[MQTT] Connecting to broker: " + broker);
         this.client.connect(connOpts);
         System.out.println("[MQTT] Connected");
-        System.out.println("[MQTT] Subscribe " + TOPIC_TEMPERATURE);
-        client.subscribe(TOPIC_TEMPERATURE, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_TEMPERATURE2);
-        client.subscribe(TOPIC_TEMPERATURE2, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_TEMPERATURE3);
-        client.subscribe(TOPIC_TEMPERATURE3, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_WATER);
-        client.subscribe(TOPIC_WATER, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_WATER2);
-        client.subscribe(TOPIC_WATER2, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_WATER3);
-        client.subscribe(TOPIC_WATER3, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_GAS);
-        client.subscribe(TOPIC_GAS, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_GAS2);
-        client.subscribe(TOPIC_GAS2, QoS);
-        System.out.println("[MQTT] Subscribe " + TOPIC_GAS3);
-        client.subscribe(TOPIC_GAS3, QoS);
+        System.out.println("[MQTT] Subscribe " + TOPIC_ADC1);
+        client.subscribe(TOPIC_ADC1, QoS);
+        //System.out.println("[MQTT] Subscribe " + TOPIC_TEMPERATURE2);
+        //client.subscribe(TOPIC_TEMPERATURE2, QoS);
+        //System.out.println("[MQTT] Subscribe " + TOPIC_TEMPERATURE3);
+        //client.subscribe(TOPIC_TEMPERATURE3, QoS);
+        System.out.println("[MQTT] Subscribe " + TOPIC_ADC2);
+        client.subscribe(TOPIC_ADC2, QoS);
+        //System.out.println("[MQTT] Subscribe " + TOPIC_WATER2);
+        //client.subscribe(TOPIC_WATER2, QoS);
+        //System.out.println("[MQTT] Subscribe " + TOPIC_WATER3);
+        //client.subscribe(TOPIC_WATER3, QoS);
+        System.out.println("[MQTT] Subscribe " + TOPIC_ADC3);
+        client.subscribe(TOPIC_ADC3, QoS);
+        //System.out.println("[MQTT] Subscribe " + TOPIC_GAS2);
+        //client.subscribe(TOPIC_GAS2, QoS);
+        //System.out.println("[MQTT] Subscribe " + TOPIC_GAS3);
+        //client.subscribe(TOPIC_GAS3, QoS);
         System.out.println("[MQTT] Ready");       
     }
 
@@ -117,62 +112,62 @@ public class Mqtt implements MqttCallback
     }
 
     //GET-AK
-    public String getTemperature() 
+    /*public String getTemperature() 
     {
         return this.valueTemperature;
-    }
+    }*/
     
-    public String getTemperature2() 
+    /*public String getTemperature2() 
     {
         return this.valueTemperature2;
-    }
+    }*/
     
-    public String getTemperature3() 
+    /*public String getTemperature3() 
     {
         return this.valueTemperature3;
-    }
+    }*/
 
-    public int getWater() 
+    /*public int getWater() 
     {
         return this.valueWater;
-    }
+    }*/
     
-    public int getWater2() 
+    /*public int getWater2() 
     {
         return this.valueWater2;
-    }
+    }*/
     
-    public int getWater3() 
+    /*public int getWater3() 
     {
         return this.valueWater3;
-    }
+    }*/
   
-    public String getGas() 
+    /*public String getGas() 
     {
         return this.valueGas;
-    }  
+    } */ 
     
-    public String getGas2() 
+    /*public String getGas2() 
     {
         return this.valueGas2;
-    } 
+    }*/ 
     
-    public String getGas3() 
+    /*public String getGas3() 
     {
         return this.valueGas3;
-    } 
+    }*/
     
-    public String getadc1() 
+    public String getAdc1() 
     {
         return this.adc1;
     }
     
-    public String getadc2() 
+    public String getAdc2() 
     {
         return this.adc2;
     }
     
-    public String getadc3() 
+    public String getAdc3() 
     {
         return this.adc3;
     }
@@ -200,51 +195,42 @@ public class Mqtt implements MqttCallback
 
         switch(topic) 
         {
-        case TOPIC_TEMPERATURE:
-        	String[] timeParts = content.split(":");
-
-            adc1 = timeParts[0];
-            adc2 = timeParts[1];
-            adc3 = timeParts[2];
+        case TOPIC_ADC1:
+            this.adc1 = content;
             System.out.println("ADC1: "+this.adc1);
-            System.out.println("ADC2: "+this.adc2);
-            System.out.println("ADC3: "+this.adc3);
-
-            /*this.valueTemperature = content;
-            System.out.println("Temperatura: "+this.valueTemperature);*/
             break;
-        case TOPIC_TEMPERATURE2:
+        /*case TOPIC_TEMPERATURE2:
             this.valueTemperature2 = content;
             System.out.println("Temperatura2: "+this.valueTemperature2);
-            break;
-        case TOPIC_TEMPERATURE3:
+            break;*/
+        /*case TOPIC_TEMPERATURE3:
             this.valueTemperature3 = content;
             System.out.println("Temperatura3: "+this.valueTemperature3);
+            break;*/
+        case TOPIC_ADC2:
+            this.adc2 = content;
+            System.out.println("ADC2: "+this.adc2);
             break;
-        case TOPIC_WATER:
-            this.valueWater = Integer.parseInt(content);
-            System.out.println("Agua: "+this.valueWater);
-            break;
-        case TOPIC_WATER2:
+        /*case TOPIC_WATER2:
             this.valueWater2 = Integer.parseInt(content);
             System.out.println("Agua2: "+this.valueWater2);
-            break;
-        case TOPIC_WATER3:
+            break;*/
+        /*case TOPIC_WATER3:
             this.valueWater3 = Integer.parseInt(content);
             System.out.println("Agua3: "+this.valueWater3);
+            break;*/
+        case TOPIC_ADC3:
+            this.adc3 = content;
+            System.out.println("ADC3: "+this.adc3);
             break;
-        case TOPIC_GAS:
-            this.valueGas = content;
-            System.out.println("Gas: "+this.valueGas);
-            break;
-        case TOPIC_GAS2:
+        /*case TOPIC_GAS2:
             this.valueGas2 = content;
             System.out.println("Gas2: "+this.valueGas2);
-            break;
-        case TOPIC_GAS3:
+            break;*/
+        /*case TOPIC_GAS3:
             this.valueGas3 = content;
             System.out.println("Gas3: "+this.valueGas3);
-            break;
+            break;*/
         default:
             break;
         }

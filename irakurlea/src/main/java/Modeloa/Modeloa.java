@@ -1,54 +1,46 @@
 package Modeloa;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
+import java.awt.event.*;
+import java.beans.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
 import javax.swing.Timer;
 
 import Bista.Printzipala;
-import Kontrolatzailea.NireAkzioa;
 
 public class Modeloa implements ActionListener
 {
-	//PROPIETATEAK
-	public final static String PROPIETATEA = "putzua";
-	public final static String PROPIETATEA2 = "haizegailua";
-	public final static String PROPIETATEA3 = "berogailua";
-	public final static String PROPIETATEA4 = "denboraPasaDa";
-	public final static String PROPIETATEA5 = "ezk";
-	public final static String PROPIETATEA6 = "erd";
-	public final static String PROPIETATEA7 = "esk";
-	public final static String PROPIETATEA8 = "berdeaTimer";
+	//MVC
+	private Printzipala irudia; //Bista
+	
+	//PROPIETATEAK (STRING)
+	public final static String PROPIETATEA = "putzua"; //Putzua aukeratu da
+	public final static String PROPIETATEA2 = "haizegailua"; //Haizegailua aukeratu da
+	public final static String PROPIETATEA3 = "berogailua"; //Berogailua aukeratu da
+	public final static String PROPIETATEA4 = "denboraPasaDa"; //Pantaila aktualizatzen da
+	public final static String PROPIETATEA5 = "ezk"; //Ezkerreko botoia aukeratu da
+	public final static String PROPIETATEA6 = "erd"; //Erdiko botoia aukeratu da
+	public final static String PROPIETATEA7 = "esk"; //Eskuineko botoia aukeratu da
+	public final static String PROPIETATEA8 = "berdeaTimer"; //Konfirmatu botoiak parpadeatzeko
 	public final static String PROPIETATEA9 = "eliminar3Timer";
 	public final static String PROPIETATEA10 = "eliminarTimer";
 	public final static String PROPIETATEA11 = "eliminar2Timer";
+	public final static String PROPIETATEA12 = "eliminar4Timer"; //Login pantailan hizkuntzak aldatzean pantaila aldaketa ez ikusteko
 	
-	//COLLECTIONS
+	//MAPAK
 	private Map<String, Erabiltzailea> erabiltzaileak; //Erabiltzaileen Mapa
 	private Map<String, Hizkuntza> hizkuntzak; //Erabiltzaileen Mapa
 
 	//TIMER-AK	
 	public Timer timer=null; //Pantaila aktualizatzeko timer-a
 	public Timer timer2 = null; //Konfirmatu Botoiaren parpadeo berdea
-	public Timer timer3 = null; //Pantaila batetik bestera dagoen denbora luzatzeko
-	public Timer timer4 = null; //Pantaila batetik bestera dagoen denbora luzatzeko
-	public Timer timer5 = null; //Pantaila batetik bestera dagoen denbora luzatzeko
-	
-	int maxHiz = 0;
-	
-	//MVC
-	Printzipala irudia; //Bista
+	public Timer timer3 = null; //
+	public Timer timer4 = null; //
+	public Timer timer5 = null; //
 	
 	//PROPERTY CHANGE
-	PropertyChangeSupport konektorea; //Konektorea
+	private PropertyChangeSupport konektorea; //Konektorea
 		
 	//KONSTRUKTOREA
 	public Modeloa() 
@@ -68,23 +60,23 @@ public class Modeloa implements ActionListener
 	    timer5.setActionCommand("Denbora3");
 	    
 	    erabiltzaileak = new HashMap<>(); //Erabiltzaileen Mapa
-	    hizkuntzak = new HashMap<>();
+	    hizkuntzak = new HashMap<>(); //Hizkuntzen mapa
 	}
 	
 	//BISTA
 	public void setIrudia (Printzipala irudia) 
 	{
-		this.irudia = irudia;
+		this.irudia = irudia; //Bista
 	}
 	
 	//ERABILTZAILEEN FITXATEGIA IRAKURRI ETA ERABILTZAILEAK SORTU
 	public void erabiltzaileakIrakurri() 
 	{
-	    try (BufferedReader br = new BufferedReader(new FileReader("erabiltzaileak.txt"))) 
+	    try (BufferedReader br = new BufferedReader(new FileReader("erabiltzaileak.txt"))) //erabiltzaileak.txt fitxategia irakurtzen ahalegintzen da
 	    {
 	        String linea; //Lerro bakoitza
 	        
-	        while ((linea = br.readLine()) != null) 
+	        while ((linea = br.readLine()) != null) //Lerroa null ez baldin bada
 	        {
 	            String[] partes = linea.split(":"); //Izena eta pasahitza desberdintzeko bi puntu erdian
 	            if (partes.length >= 2) //Zenbat zati dituen fila bakoitzak
@@ -98,101 +90,116 @@ public class Modeloa implements ActionListener
 	            }
 	        }
 	    } 
-	    catch (IOException e) 
+	    catch (IOException e)  //Exception
 	    {
-	        e.printStackTrace();
+	        e.printStackTrace(); //Exceptionak saltatu eskero zer gertatu den esateko
 	    }
 	}
 	
+	//HIZKUNTZEN FITXATEGIA IRAKURRI ETA HIZKUNTZAK SORTU
 	public void hizkuntzakIrakurri() 
 	{
-	    try (BufferedReader br = new BufferedReader(new FileReader("hizkuntzak.txt"))) 
+	    try (BufferedReader br = new BufferedReader(new FileReader("hizkuntzak.txt"))) //hizkuntzak.txt fitxategia irakurtzen ahalegintzen da
 	    {
-	        String linea;
-	        while ((linea = br.readLine()) != null) 
+	        String linea; //Lerro bakoitza
+	        
+	        while ((linea = br.readLine()) != null) //Lerroa null ez baldin bada
 	        {
-	            String hizkuntza1 = linea;
-	            Hizkuntza hizkuntza = new Hizkuntza();
-	            hizkuntza.setIzena(hizkuntza1);
-	            hizkuntzak.put(hizkuntza1, hizkuntza);
-	            System.out.println(hizkuntza.getIzena());
-	            maxHiz++;
+	            String hizkuntza1 = linea; //Lehenengo linean jartzen duena hizkuntza1-en gorde
+	            Hizkuntza hizkuntza = new Hizkuntza(); //Hizkuntza berri bat sortu
+	            hizkuntza.setIzena(hizkuntza1); //Sortutako hizkuntza berriari izena gehitu
+	            hizkuntzak.put(hizkuntza1, hizkuntza); //Hizkuntzak mapan gorde sortutako hizkuntza berria
+	            System.out.println(hizkuntza.getIzena()); //Sortutako hizkuntzak consolan ikusteko
 	            
-	            try (BufferedReader br2 = new BufferedReader(new FileReader(hizkuntza1 + ".txt"))) 
+	            try (BufferedReader br2 = new BufferedReader(new FileReader(hizkuntza1 + ".txt"))) //hizkuntza1-ek duen balioa.txt fitxategia irakurtzen ahalegintzen da
 			    {
-			        String lineea = null;
-			        while ((lineea = br2.readLine()) != null) 
+			        String lineea = null; //Lerro bakoitza
+			        
+			        while ((lineea = br2.readLine()) != null) //Lerroa null ez baldin bada
 			        {
-			        	 String[] partes = lineea.split(":");
-			            String datua = partes[0].trim();
-			            hizkuntza.backButtom = datua;
-			            System.out.println(hizkuntza.backButtom);
+			        	String[] partes = lineea.split(":"); //Hitz desberdinak banantzeko : beraien artean
+			        	 
+			            String datua = partes[0].trim(); //Datua irakurri
+			            hizkuntza.backButtom = datua; //Datua gorde
 			            
-			            String datua2 = partes[1].trim();
-			            hizkuntza.editButtom = datua2;	 
-			            System.out.println(hizkuntza.editButtom);
+			            String datua2 = partes[1].trim(); //Datua irakurri
+			            hizkuntza.editButtom = datua2; //Datua gorde	 
 			            
-			            String datua3 = partes[2].trim();
-			            hizkuntza.deleteButtom = datua3;
-			            System.out.println(hizkuntza.deleteButtom);
+			            String datua3 = partes[2].trim(); //Datua irakurri
+			            hizkuntza.deleteButtom = datua3; //Datua gorde
 			            
-			            String datua4 = partes[3].trim();
-			            hizkuntza.confirmButtom = datua4;
-			            System.out.println(hizkuntza.confirmButtom);
+			            String datua4 = partes[3].trim(); //Datua irakurri
+			            hizkuntza.confirmButtom = datua4; //Datua gorde
 			            
-			            String datua5 = partes[4].trim();
-			            hizkuntza.aukerak = datua5;
+			            String datua5 = partes[4].trim(); //Datua irakurri
+			            hizkuntza.aukerak = datua5; //Datua gorde
 			            
-			            String datua6 = partes[5].trim();
-			            hizkuntza.putzua = datua6;	 
+			            String datua6 = partes[5].trim(); //Datua irakurri
+			            hizkuntza.putzua = datua6; //Datua gorde	 
 			            
-			            String datua7 = partes[6].trim();
-			            hizkuntza.haizegailua = datua7;
+			            String datua7 = partes[6].trim(); //Datua irakurri
+			            hizkuntza.haizegailua = datua7; //Datua gorde
 			            
-			            String datua8 = partes[7].trim();
-			            hizkuntza.berogailua = datua8;
+			            String datua8 = partes[7].trim(); //Datua irakurri
+			            hizkuntza.berogailua = datua8; //Datua gorde
+			            
+			            String datua9 = partes[8].trim(); //Datua irakurri
+			            hizkuntza.kargatzen = datua9; //Datua gorde
+			            
+			            String datua10 = partes[9].trim(); //Datua irakurri
+			            hizkuntza.eskuma = datua10; //Datua gorde
+			            
+			            String datua11 = partes[10].trim(); //Datua irakurri
+			            hizkuntza.erdia = datua11; //Datua gorde
+			            
+			            String datua12 = partes[11].trim(); //Datua irakurri
+			            hizkuntza.ezkerra = datua12; //Datua gorde
+			            
+			            String datua13 = partes[12].trim(); //Datua irakurri
+			            hizkuntza.ezabatuEsaldia = datua13; //Datua gorde
+			            
+			            String datua14 = partes[13].trim(); //Datua irakurri
+			            hizkuntza.aukeratu = datua14; //Datua gorde
+			            
+			            String datua15 = partes[14].trim(); //Datua irakurri
+			            hizkuntza.irten = datua15; //Datua gorde
+			            
+			            String datua16 = partes[15].trim(); //Datua irakurri
+			            hizkuntza.minimizatu = datua16; //Datua gorde
+			            
+			            String datua17 = partes[16].trim(); //Datua irakurri
+			            hizkuntza.maximizatu = datua17; //Datua gorde
+			            
+			            String datua18 = partes[17].trim(); //Datua irakurri
+			            hizkuntza.hizkuntzak = datua18; //Datua gorde
+			            
+			            String datua19 = partes[18].trim(); //Datua irakurri
+			            hizkuntza.hiruGehienez = datua19; //Datua gorde
+			            
+			            String datua20 = partes[19].trim(); //Datua irakurri
+			            hizkuntza.izena = datua20; //Datua gorde
+			            
+			            String datua21 = partes[20].trim(); //Datua irakurri
+			            hizkuntza.pasahitza = datua21; //Datua gorde
+			            
+			            String datua22 = partes[21].trim(); //Datua irakurri
+			            hizkuntza.hasiSaioa = datua22; //Datua gorde
+			            
+			            String datua23 = partes[22].trim(); //Datua irakurri
+			            hizkuntza.hasierakoTamaina = datua23; //Datua gorde
 			        }
 			    } 
-			    catch (IOException e) 
+			    catch (IOException e) //Exception
 			    {
-			        e.printStackTrace();
+			        e.printStackTrace(); //Exceptionak saltatu eskero zer gertatu den esateko
 			    }
 	        }
 	    } 
-	    catch (IOException e) 
+	    catch (IOException e) //Exception
 	    {
-	        e.printStackTrace();
+	        e.printStackTrace(); //Exceptionak saltatu eskero zer gertatu den esateko
 	    }
 	}
-	
-	/*public void hizkuntzaBakoitzaIrakurri() 
-	{
-		Hizkuntza izena;
-		for(int i=0;i<maxHiz;i++) 
-		{
-			izena = hizkuntzak.get(i);
-		    try (BufferedReader br = new BufferedReader(new FileReader(String.valueOf(izena) + ".txt"))) 
-		    {
-		        String linea;
-		        while ((linea = br.readLine()) != null) 
-		        {
-		        	 String[] partes = linea.split(":");
-		            String datua = partes[0].trim();
-		            izena.backButtom = datua;	
-		            String datua2 = partes[1].trim();
-		            izena.editButtom = datua2;	 
-		            String datua3 = partes[2].trim();
-		            izena.deleteButtom = datua3;	 
-		            String datua4 = partes[3].trim();
-		            izena.confirmButtom = datua4;	 
-		        }
-		    } 
-		    catch (IOException e) 
-		    {
-		        e.printStackTrace();
-		    }
-		}
-	}*/
 	
 	//ERABILTZAILE HORREN PASAHITZA HORI DEN EDO EZ ESATEN DU
 	public boolean isUsuarioContraseña(String nombre, String contrasena) 
@@ -212,20 +219,55 @@ public class Modeloa implements ActionListener
 	{		
 		irudia.izena = "argelia"; //Erabiltzailearen izena aldatu
 		irudia.erabiltzailea = getErabiltzailea("argelia");
-		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzaile horren pantaila aurretik gordetako elementuekin erakusten du
+		
+		irudia.erabiltzailea = getErabiltzailea(irudia.izena); //Erabiltzailearen datuak hartzen ditu  
+    	
+    	if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
+    	{          		                
+    		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
+    	}
+    	else
+    	{
+    		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
+    	}  
+		
 		irudia.adminFrame.dispose(); //Maparen pantaila itxi egiten du
         irudia.adminMapa = 1;
 	}
 	
-	//GROENLANDIAKO BABES ETXEAN CLICK EGITEAN...
-	public void groenlandiaBABESETXEclick()
+	//SUECIAKO BABES ETXEAN CLICK EGITEAN...
+	public void sueciaBABESETXEclick()
 	{		
-		irudia.izena = "groenlandia"; //Erabiltzailearen izena aldatu
-		irudia.erabiltzailea = getErabiltzailea("groenlandia");
-		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzaile horren pantaila aurretik gordetako elementuekin erakusten du
+		irudia.izena = "suecia"; //Erabiltzailearen izena aldatu
+		irudia.erabiltzailea = getErabiltzailea("suecia");
+		if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
+    	{          		                
+    		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
+    	}
+    	else
+    	{
+    		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
+    	}  
 		irudia.adminFrame.dispose(); //Maparen pantaila itxi egiten du
     	irudia.adminMapa = 1;
 	}		
+	
+	//LIBIAKO BABES ETXEAN CLICK EGITEAN...
+		public void libiaBABESETXEclick()
+		{		
+			irudia.izena = "libia"; //Erabiltzailearen izena aldatu
+			irudia.erabiltzailea = getErabiltzailea("libia");
+			if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
+	    	{          		                
+	    		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
+	    	}
+	    	else
+	    	{
+	    		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
+	    	}  
+			irudia.adminFrame.dispose(); //Maparen pantaila itxi egiten du
+	    	irudia.adminMapa = 1;
+		}
 	
 	//LOGIN PANTAILAN IZENAREN TOKIAN JARRITAKOAREN ARABERA...
 	public void autenticarUsuario() 
@@ -236,9 +278,8 @@ public class Modeloa implements ActionListener
 		if (autenticar(irudia.izena, contrasena)) //Izena eta pasahitza hutsuneak beteta daueden edo ez esaten du
 		{			
             if (("admin".equals(irudia.izena)) && ("admin".equals(contrasena))) //Admin Admin jartzean maparen pantaila zabaltzen du
-            {       
-            	//timerEliminar3.setRepeats(false);
-            	//timerEliminar3.start(); 
+            {                 	
+            	irudia.erabiltzailea = getErabiltzailea(irudia.izena);
                 irudia.mostrarPantallaAdmin(); //Admin pantaila irekitzen da, mapa ageri dena
                 irudia.loginPANTAILA.dispose(); //Login pantaila itxi egiten du
             } 
@@ -312,7 +353,7 @@ public class Modeloa implements ActionListener
 		konektorea.removePropertyChangeListener(listener);
 	}
 	
-	//PRIPIETATEAK BISTARA BIDALTZEN DITU FIRE PROPERTY CHANGE ERABILIZ
+	//PROPIETATEAK BISTARA BIDALTZEN DITU FIRE PROPERTY CHANGE ERABILIZ
 	public void bota(String mota, int posizioa)
 	{
 		switch (mota) 

@@ -1,26 +1,23 @@
 package Kontrolatzailea;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.UIManager;
+import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 
+import Bista.Koloreak;
 import Bista.Printzipala;
 import Modeloa.Modeloa;
 
-public class Kontrolatzailea extends MouseAdapter implements ActionListener, KeyListener 
+public class Kontrolatzailea extends MouseAdapter implements ActionListener, KeyListener, FocusListener
 {
 	//MVC
-	Printzipala irudia; //Bista
-	Modeloa modeloa; //Modeloa
+	private Printzipala irudia; //Bista
+	private Modeloa modeloa; //Modeloa
 	
 	//INT
-	int pos; //Posizioa
+	private int pos; //Posizioa
 	
 	//KONSTRUKTOREA
 	public Kontrolatzailea(Modeloa modeloa) 
@@ -33,143 +30,170 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	//BISTA
 	public void setIrudia (Printzipala irudia) 
 	{
-		this.irudia = irudia;
+		this.irudia = irudia; //Bista
 	}
 	
 	@Override
 	//ACTION PERFORMED
 	public void actionPerformed(ActionEvent e) 
 	{	
-	    if ("SAIOAHASI".equals(e.getActionCommand()))
+	    if ("SAIOAHASI".equals(e.getActionCommand())) //Login pantailako saioa hasi botoia
 	    {
 	    	modeloa.autenticarUsuario(); //Saioa hasi botoia sakatzean erabiltzailea ea ondo jarri duzun analisatuko du
 	    } 
-	    else if (("HUECO".equals(e.getActionCommand())) || (("HUECO2".equals(e.getActionCommand()))) || (("HUECO3".equals(e.getActionCommand()))))
+	    else if (("HUECO".equals(e.getActionCommand())) || (("HUECO2".equals(e.getActionCommand()))) || (("HUECO3".equals(e.getActionCommand())))) //Pantailan sortzen diren hutsuneak zuk klikatu eta zer jarri nahi duzun aukeratu ahal duzu
 	    {
 	    	switch(e.getActionCommand()) 
 	    	{
 		    	case "HUECO":
 		    	{
-		    		pos = 1; //Ezkerreko botoia aukeratu da
+		    		if(irudia.erabiltzailea.buttonBEHIN == 0)
+		    		{
+		    			pos = 1; //Ezkerreko botoia aukeratu da
+		    			irudia.mostrarOpciones(); //Argazkien aukerak erakuzten dira
+		    		}		    		
 		    		break;
 		    	}
 		    	case "HUECO2":
 		    	{
-		    		pos = 2; //Erdiko botoia aukeratu da
+		    		if(irudia.erabiltzailea.button2BEHIN == 0)
+		    		{
+		    			pos = 2; //Erdiko botoia aukeratu da
+		    			irudia.mostrarOpciones(); //Argazkien aukerak erakuzten dira
+		    		}
 		    		break;
 		    	}
 		    	case "HUECO3":
 		    	{
-		    		pos = 3; //Eskuineko botoia aukeratu da
+		    		if(irudia.erabiltzailea.button3BEHIN == 0)
+		    		{
+		    			pos = 3; //Eskuineko botoia aukeratu da
+		    			irudia.mostrarOpciones(); //Argazkien aukerak erakuzten dira
+		    		}
 		    		break;
 		    	}
-	    	}
-	    	irudia.mostrarOpciones(irudia.hizkuntza); //Argazkien aukerak erakuzten dira
+	    	}    	
 	    } 
-	    /*else if ("IRTEN".equals(e.getActionCommand())) 
+	    else if ("ATRAS".equals(e.getActionCommand()))//Atzera botoia
 	    {
-	    	System.exit(0); //
-	    }*/
-	    else if ("ATRAS".equals(e.getActionCommand())) 
-	    {
-	    	
-	    	if(irudia.adminMapa==1)
-	    	{	    		
-	    		irudia.mostrarPantallaAdmin();
-	    		irudia.mainPANTAILA.dispose();
+	    	if(irudia.erabiltzailea.backButtonBEHIN == 0) //Atzera botoia aktibatuta baldin badago
+	    	{
+		    	if(irudia.adminMapa==1) //Admin-eko mapako babesetxe batetik etorri eskero
+		    	{	    		
+		    		irudia.mostrarPantallaAdmin(); //Admin mapa zabaldu
+		    		irudia.mainPANTAILA.dispose(); //Main pantaila itxi
+		    	}
+		    	else if(irudia.adminMapa==2) //Admin-eko mapatik etorri eskero
+		    	{	    		
+		    		irudia.loginPantailaErakutzi(); //Login pantaila zabaldu
+		    		irudia.adminFrame.dispose(); //Admin pantaila itxi
+		    	}
+		    	else //Babesetxe batetik etorri eskero
+		    	{	    		
+		    		irudia.loginPantailaErakutzi(); //Login pantaila zabaldu
+		    		irudia.mainPANTAILA.dispose(); //Main pantaila itxi
+		    	}	        
 	    	}
-	    	else if(irudia.adminMapa==2)
-	    	{	    		
-	    		irudia.loginPantailaErakutzi();
-	    		irudia.adminFrame.dispose();
-	    	}
-	    	else
-	    	{	    		
-	    		irudia.loginPantailaErakutzi();
-	    		irudia.mainPANTAILA.dispose();
-	    	}	        
 	    }
-	    else if ("GEHITU".equals(e.getActionCommand())) 
+	    else if ("GEHITU".equals(e.getActionCommand())) //Gehitu botoia
 	    {
-	    	modeloa.timer3.setRepeats(false);
-	    	modeloa.timer3.start();
-	    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
-	    	//SwingUtilities.invokeLater(() -> {
-	    	//irudia.mainPANTAILA.dispose();    	
-	        //irudia.mostrarPantallaEditarHuecos(irudia.erabiltzailea);	        
-	        //irudia.mainPANTAILA2.dispose();
-	    	//});
-	    	irudia.zer = "gehitu";
+	    	if(irudia.erabiltzailea.editButtonBEHIN == 0) //Gehitu botoia aktibatuta baldin badago
+	    	{
+		    	modeloa.timer3.setRepeats(false); //Timer3 soilik behin
+		    	modeloa.timer3.start(); //Timer3 hasi
+		    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
+		    	irudia.zer = "gehitu";
+	    	}
 	    }
 	    else if ("KONFIRMATU".equals(e.getActionCommand())) 
 	    {
-	    	//irudia.mainPANTAILA.dispose();
-	    	modeloa.timer2.stop();
-	    	modeloa.timer3.setRepeats(false);
-	    	modeloa.timer3.start();
-	    	irudia.mostrarPantallaWait(irudia.erabiltzailea);
-		    //irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea);	
-	    	irudia.zer = "konfirmatu";
+	    	if(irudia.erabiltzailea.confirmButtonBEHIN == 0)
+	    	{
+		    	modeloa.timer2.stop(); //Timer2 gelditu
+		    	modeloa.timer3.setRepeats(false); //Timer3 soilik behin
+		    	modeloa.timer3.start(); //Timer3 hasi
+		    	irudia.mostrarPantallaWait(irudia.erabiltzailea); //Wait pantaila erakutzi
+		    	irudia.zer = "konfirmatu"; //Aukeratu den botoia konfirmatu da
+	    	}
 	    }
-	    else if ("EZABATU".equals(e.getActionCommand())) 
+	    else if ("EZABATU".equals(e.getActionCommand())) //Ezabatu botoia
 	    {
-	    	irudia.mostrarOpcionesEliminar();
-	    	//irudia.deleteButton.setVisible(false);
-	    	irudia.deleteButton.setBackground(new Color(120, 120, 120));
-	    	//irudia.editButton.setVisible(false);
-	    	irudia.editButton.setBackground(new Color(120, 120, 120));
-	    	//irudia.backButton.setVisible(false);
-	    	irudia.backButton.setBackground(new Color(120, 120, 120));
-	    	//irudia.confirmButton.setVisible(true);
-	    	irudia.confirmButton.setBackground(UIManager.getColor("Button.background"));
+	    	if(irudia.erabiltzailea.deleteButtonBEHIN == 0) //Ezabatu botoia aktibatuta baldin badago
+	    	{
+		    	irudia.mostrarOpcionesEliminar(); //Ezabatzeko aukerak erakutzi
+		    	
+		    	LineBorder lineBorder = new LineBorder(Koloreak.GRISARGIA, 3); //Borde grisa sortu
+		    	irudia.erabiltzailea.deleteButtonBEHIN = 1; //Ezabatu botoia desaktibatu
+		    	irudia.deleteButton.setBackground(Koloreak.GRISARGIA); //Ezabatu botoiaren kolorea grisa
+		    	irudia.deleteButton.setBorder(lineBorder); //Ezabatu botoiari borde grisa jarri
+		    	irudia.erabiltzailea.editButtonBEHIN = 1; //Gehitu botoia desaktibatu
+		    	irudia.editButton.setBackground(Koloreak.GRISARGIA); //Gehitu botoiaren kolorea grisa
+		    	irudia.editButton.setBorder(lineBorder); //Gehitu botoiari borde grisa jarri
+		    	irudia.erabiltzailea.backButtonBEHIN = 1; //Atzera botoia desaktibatu
+		    	irudia.backButton.setBackground(Koloreak.GRISARGIA); //Atzera botoiaren kolorea grisa
+		    	irudia.backButton.setBorder(lineBorder); //Atzera botoiari borde grisa jarri
+		    	irudia.erabiltzailea.confirmButtonBEHIN = 0; //Konfirmatu botoia aktibatu
+		    	irudia.confirmButton.setBackground(Koloreak.URDINILUNA); //Konfirmatu botoiaren kolorea urdin iluna
+		    	LineBorder lineBorder2 = new LineBorder(Koloreak.BERDEARGIA, 3); //Borde berdea sortu
+		    	irudia.confirmButton.setBorder(lineBorder2); //Konfirmatu botoiari borde berdea jarri
+	    	}
 	    }
-	    else if ("PUTZUA".equals(e.getActionCommand())) 
+	    else if ("PUTZUA".equals(e.getActionCommand())) //Putzua aukeratu da
 	    {	
-	    	if(modeloa.timer!=null)
+	    	if(modeloa.timer!=null) //Timer ez baldin bada null barrura sartu
 	    	{
-	    		modeloa.timer.start();
+	    		modeloa.timer.start(); //Timer martxan hasi
 	    	}
 	    	
-	    	modeloa.bota("putzua", pos);	    	
+	    	modeloa.bota("putzua", pos); //Modelora bidali    	
 	    } 
-	    else if ("HAIZEGAILUA".equals(e.getActionCommand())) 
+	    else if ("HAIZEGAILUA".equals(e.getActionCommand())) //Haizegailua aukeratu da
 	    {
-	    	if(modeloa.timer!=null)
+	    	if(modeloa.timer!=null) //Timer ez baldin bada null barrura sartu
 	    	{
-	    		modeloa.timer.start();
+	    		modeloa.timer.start(); //Timer martxan hasi
 	    	}
 	    	
-	    	modeloa.bota("haizegailua", pos);
+	    	modeloa.bota("haizegailua", pos); //Modelora bidali    
 	    } 
-	    else if ("BEROGAILUA".equals(e.getActionCommand())) 
+	    else if ("BEROGAILUA".equals(e.getActionCommand())) //Berogailua aukeratu da
 	    {
-	    	if(modeloa.timer!=null)
+	    	if(modeloa.timer!=null) //Timer ez baldin bada null barrura sartu
 	    	{
-	    		modeloa.timer.start();
+	    		modeloa.timer.start(); //Timer martxan hasi
 	    	}
 	    	
-	    	modeloa.bota("berogailua", pos);
+	    	modeloa.bota("berogailua", pos); //Modelora bidali    
 	    }
-	    else if ("EZKERREKOA".equals(e.getActionCommand())) 
+	    else if ("EZKERREKOA".equals(e.getActionCommand())) //Ezabatzerako orduan ezkerrekoa aukeratu da
 	    {
-	    	modeloa.timer2.start();
-	    	modeloa.bota("ezk", pos);	    
+	    	LineBorder lineBorder = new LineBorder(Color.RED, 3); //Borde gorria sortu
+		    irudia.button.setBorder(lineBorder); //Borde gorria jarri
+	    	
+	    	modeloa.timer2.start(); //Timer2 martxan jarri
+	    	modeloa.bota("ezk", pos); //Modelora bidali    
 	    } 
-	    else if ("ERDIKOA".equals(e.getActionCommand())) 
+	    else if ("ERDIKOA".equals(e.getActionCommand())) //Ezabatzerako orduan erdikoa aukeratu da
 	    {
-	    	modeloa.timer2.start();
-	    	modeloa.bota("erd", pos);
+	    	LineBorder lineBorder = new LineBorder(Color.RED, 3); //Borde gorria sortu
+		    irudia.button2.setBorder(lineBorder); //Borde gorria jarri
+	    	
+	    	modeloa.timer2.start(); //Timer2 martxan jarri
+	    	modeloa.bota("erd", pos); //Modelora bidali 
 	    } 
-	    else if ("ESKUINEKOA".equals(e.getActionCommand())) 
+	    else if ("ESKUINEKOA".equals(e.getActionCommand())) //Ezabatzerako orduan eskuinekoa aukeratu da
 	    {
-	    	modeloa.timer2.start();
-	    	modeloa.bota("esk", pos);
+	    	LineBorder lineBorder = new LineBorder(Color.RED, 3); //Borde gorria sortu
+		    irudia.button3.setBorder(lineBorder); //Borde gorria jarri
+	    	
+	    	modeloa.timer2.start(); //Timer2 martxan jarri
+	    	modeloa.bota("esk", pos); //Modelora bidali 
 	    }
 	}
 
 	@Override
 	//KEY PRESSED
-	public void keyPressed(KeyEvent e) 
+	public void keyPressed(KeyEvent e) //Botoia sakatzean
 	{
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) //ENTER BOTOIA SAKATU
 		{
@@ -195,13 +219,71 @@ public class Kontrolatzailea extends MouseAdapter implements ActionListener, Key
 	//MOUSE CLICKED EA ARGAZKIA KLIKATU DUZUN EDO EZ BEGIRATZEN DU
     public void mouseClicked(MouseEvent e) 
     {
-        if (irudia.argeliaBABESETXE.getBounds().contains(e.getPoint()))
+        if (irudia.argeliaBABESETXE.getBounds().contains(e.getPoint())) //Argeliako babes etxean klik egitean barrura
         {
-        	modeloa.argeliaBABESETXEclick();
+        	modeloa.argeliaBABESETXEclick(); //Modeloko funtziora
         }
-        else if (irudia.groenlandiaBABESETXE.getBounds().contains(e.getPoint())) 
+        else if (irudia.sueciaBABESETXE.getBounds().contains(e.getPoint())) //Sueciako babes etxean klik egitean barrura
         {
-        	modeloa.groenlandiaBABESETXEclick();
+        	modeloa.sueciaBABESETXEclick(); //Modeloko funtziora
+        }
+        else if (irudia.libiaBABESETXE.getBounds().contains(e.getPoint())) //Libiako babes etxean klik egitean barrura
+        {
+        	modeloa.libiaBABESETXEclick(); //Modeloko funtziora
         }
     }
+
+	@Override
+	//FOCUS GAINED IZENAFIELD ETA PASAHITZAFIELD
+	public void focusGained(FocusEvent e) 
+	{
+	    if (e.getSource() instanceof JTextField) 
+	    {
+	        JTextField textField = (JTextField) e.getSource();
+
+	        if (textField == irudia.izenaField) 
+	        {
+	            if (textField.getText().equals("izena")) 
+	            {
+	                textField.setText("");
+	            }
+	            textField.setForeground(Koloreak.ZURIA);
+	            LineBorder lineBorder = new LineBorder(Koloreak.BERDEARGIA, 4);
+	            textField.setBorder(lineBorder);
+	        } 
+	        else if (textField == irudia.pasahitzaField) 
+	        {
+	            textField.setForeground(Koloreak.ZURIA);
+	            LineBorder lineBorder = new LineBorder(Koloreak.BERDEARGIA, 4);
+	            textField.setBorder(lineBorder);
+	        }
+	    }
+	}
+
+	@Override
+	//FOCUS LOST IZENAFIELD ETA PASAHITZAFIELD
+	public void focusLost(FocusEvent e) 
+	{
+	    if (e.getSource() instanceof JTextField) 
+	    {
+	        JTextField textField = (JTextField) e.getSource();
+
+	        if (textField == irudia.izenaField) 
+	        {
+	            if (textField.getText().isEmpty()) 
+	            {
+	                textField.setText("izena");
+	            }
+	            textField.setForeground(Koloreak.GRISARGIA);
+	            LineBorder lineBorder = new LineBorder(Koloreak.GRISARGIA, 4);
+	            textField.setBorder(lineBorder);
+	        } 
+	        else if (textField == irudia.pasahitzaField) 
+	        {
+	            textField.setForeground(Koloreak.GRISARGIA);
+	            LineBorder lineBorder = new LineBorder(Koloreak.GRISARGIA, 4);
+	            textField.setBorder(lineBorder);
+	        }
+	    }
+	}
 }

@@ -1,91 +1,167 @@
 package Kontrolatzailea;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
+import java.awt.event.*;
+import javax.swing.*;
 
 import Bista.Printzipala;
+import Modeloa.Hizkuntza;
 import Modeloa.Modeloa;
 
+@SuppressWarnings("serial")
+//AKZIOAK
 public class NireAkzioa extends AbstractAction
 {
-	String texto;
-	Printzipala irudia;
-	Modeloa modeloa;
+	//MVC
+	private Printzipala irudia;
+	private Modeloa modeloa;
 	
+	//STRING
+	private String texto;	
+	
+	//KONSTRUKTOREA
 	public NireAkzioa (String texto, Icon imagen, String descrip, Integer nemonic, Printzipala irudia, Modeloa modeloa)
 	{
-		super(texto,imagen);
+		super(texto,imagen); //Bere aitari deia
 		
-		this.irudia = irudia;
-		this.modeloa = modeloa;
-		this.texto = texto;
-		this.putValue( Action.SHORT_DESCRIPTION ,descrip);
-		this.putValue(Action.MNEMONIC_KEY, nemonic);
+		this.irudia = irudia; //Bista
+		this.modeloa = modeloa; //Modeloa
+		this.texto = texto; //Testua
+		this.putValue( Action.SHORT_DESCRIPTION ,descrip); //Deskripzioa jarri
+		this.putValue(Action.MNEMONIC_KEY, nemonic); //Tekla jarri
 	}
 	
 	//BISTA
 	public void setIrudia (Printzipala irudia) 
 	{
-		this.irudia = irudia;
+		this.irudia = irudia; //Bista
 	}
 	
 	@Override
+	//ACTION PERFORMED
 	public void actionPerformed(ActionEvent e) 
 	{
-		if (texto.equals("Euskera"))
+		Hizkuntza hizkuntza1 = modeloa.getHizkuntza(irudia.hizkuntza); //Momentuko hizkuntza hartu
+		
+		if (texto.equals("Euskera")) //Menuan Euskera aukeratu da
 		{
-			irudia.mainPANTAILA.dispose();
-			irudia.hizkuntza = "euskera";
-			irudia.toolbarBotoienKonfigurazioa(irudia.hizkuntza);
+			irudia.hizkuntza = "euskera"; //Hizkuntza euskera da
+			irudia.toolbarBotoienKonfigurazioa(); //Toolbarra aktualizatu
+			irudia.sortuAkzioak(); //Akzioak aktualizatu
+			
+			modeloa.timer3.setRepeats(false); //Timer3 bakarrik behin
+	    	modeloa.timer3.start(); //Timer3 martxan jarri
+	    	irudia.mostrarPantallaWait(irudia.erabiltzailea); //Wait pantaila erakutzi
 
 			if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
-        	{          		                
-        		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
+        	{          		 
+				irudia.zer = "hutsik"; //zer hutsik da
         	}
         	else
         	{
-        		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
+        		irudia.zer = "konfirmatu"; //zer konfirmatu da
         	} 
 			
 		}
-		if (texto.equals("Castellano"))
+		if (texto.equals("Castellano")) //Menuan Castellano aukeratu da
 		{
-			irudia.mainPANTAILA.dispose();
-			irudia.hizkuntza = "castellano";
-			irudia.toolbarBotoienKonfigurazioa(irudia.hizkuntza);
+			irudia.hizkuntza = "castellano"; //Hizkuntza castellano da
+			irudia.toolbarBotoienKonfigurazioa(); //Toolbarra aktualizatu
+			irudia.sortuAkzioak(); //Akzioak aktualizatu
 			
-			if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
-        	{          		                
-        		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
-        	}
-        	else
-        	{
-        		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
-        	}  
-			
-		}
-		if (texto.equals("Ingles"))
-		{
-			irudia.mainPANTAILA.dispose();
-			irudia.hizkuntza = "ingles";
-			irudia.toolbarBotoienKonfigurazioa(irudia.hizkuntza);
+			modeloa.timer3.setRepeats(false); //Timer3 bakarrik behin
+	    	modeloa.timer3.start(); //Timer3 martxan jarri
+	    	irudia.mostrarPantallaWait(irudia.erabiltzailea); //Wait pantaila erakutzi
 
 			if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
-        	{				
-        		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
+        	{          		 
+				irudia.zer = "hutsik"; //zer hutsik da
         	}
         	else
         	{
-        		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
+        		irudia.zer = "konfirmatu"; //zer konfirmatu da
         	} 
 			
 		}
-		if (texto.equals("Irten"))
+		if (texto.equals("Ingles")) //Menuan Ingles aukeratu da
 		{
-			System.exit(0); //Jokoa itxi egiten da
+			irudia.hizkuntza = "ingles"; //Hizkuntza ingles da
+			irudia.toolbarBotoienKonfigurazioa(); //Toolbarra aktualizatu
+			irudia.sortuAkzioak(); //Akzioak aktualizatu
+
+			modeloa.timer3.setRepeats(false); //Timer3 bakarrik behin
+	    	modeloa.timer3.start(); //Timer3 martxan jarri
+	    	irudia.mostrarPantallaWait(irudia.erabiltzailea); //Wait pantaila erakutzi
+
+			if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
+        	{          		 
+				irudia.zer = "hutsik"; //zer hutsik da
+        	}
+        	else
+        	{
+        		irudia.zer = "konfirmatu"; //zer konfirmatu da
+        	} 
+			
+		}
+		if (texto.equals("Euskera ")) //Login Menuan Euskera aukeratu da
+		{			
+			irudia.loginPANTAILA.dispose();
+			irudia.hizkuntza = "euskera"; //Hizkuntza euskera da
+			irudia.sortuAkzioak(); //Akzioak aktualizatu
+			irudia.loginPantailaErakutzi();
+		}
+		if (texto.equals("Castellano ")) //Login Menuan Castellano aukeratu da
+		{
+			irudia.loginPANTAILA.dispose();
+			irudia.hizkuntza = "castellano"; //Hizkuntza castellano da
+			irudia.sortuAkzioak(); //Akzioak aktualizatu
+			irudia.loginPantailaErakutzi();
+		}
+		if (texto.equals("Ingles ")) //Login Menuan Ingles aukeratu da
+		{
+			irudia.loginPANTAILA.dispose();
+			irudia.hizkuntza = "ingles"; //Hizkuntza ingles da
+			irudia.sortuAkzioak(); //Akzioak aktualizatu
+			irudia.loginPantailaErakutzi();
+		}
+		if (texto.equals(hizkuntza1.minimizatu)) //Menuan Minimizatu aukeratu da
+		{			
+			if(irudia.pant == "main")
+			{
+				irudia.mainPANTAILA.setExtendedState(JFrame.ICONIFIED); //Programa minimizatu egiten da
+			}
+			else
+			{
+				irudia.loginPANTAILA.setExtendedState(JFrame.ICONIFIED); //Programa minimizatu egiten da
+			}
+		}
+		if (texto.equals(hizkuntza1.maximizatu)) //Menuan Maximizatu aukeratu da
+		{
+			irudia.maxPantaila = 1; //Pantaila maximizatuta izatea aukeratu da
+			if(irudia.pant == "main")
+			{
+				irudia.mainPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH); //Programa pantaila osoan jartzen da
+			}
+			else
+			{
+				irudia.loginPANTAILA.setExtendedState(JFrame.MAXIMIZED_BOTH); //Programa pantaila osoan jartzen da
+			}
+			
+		}
+		if (texto.equals(hizkuntza1.hasierakoTamaina)) //
+		{
+			irudia.maxPantaila = 0; //Pantaila maximizatuta izatea aukeratu da
+			if(irudia.pant == "main")
+			{
+				irudia.mainPANTAILA.setExtendedState(JFrame.NORMAL); //Programa hasierako tamainan jartzen da
+			}
+			else
+			{
+				irudia.loginPANTAILA.setExtendedState(JFrame.NORMAL); //Programa hasierako tamainan jartzen da
+			}
+		}
+		if (texto.equals(hizkuntza1.irten)) //Menuan Irten aukeratu da
+		{
+			System.exit(0); //Programa itxi egiten da
 		}
 	}
 }

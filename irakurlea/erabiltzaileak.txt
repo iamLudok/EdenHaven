@@ -1,3 +1,4 @@
+admin:admin
 argelia:1
 suecia:2
 libia:3

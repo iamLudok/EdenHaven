@@ -1,64 +1,36 @@
 package Modeloa;
 
-import java.util.ArrayList;
-
-public class Hizkuntza 
+//PROGRAMAREN HIZKUNTZA DESBERDINAK
+public class Hizkuntza extends DatuakGordePlantilla
 {
-	//ZEIN ARGAZKI GORDETZEN DUGUN BOTOI BAKOITZEAN
-    ArrayList<String> balioZerrenda;
-    
     //STRING
-    private String izena; //Erabiltzailearen izena
-    private String pasahitza; //Erabiltzailearen pasahitza
-    
-    //INT
-    public String backButtom;
-    public String editButtom;
-    public String deleteButtom;
-    public String confirmButtom;
-    public String aukerak;
-    public String putzua;
-    public String haizegailua;
-    public String berogailua;
+    public String backButtom; //Atzera botoia
+    public String editButtom; //Gehitu botoia
+    public String deleteButtom; //Ezabatu botoia
+    public String confirmButtom; //Konfirmatu botoia
+    public String aukerak; //Aukerak
+    public String putzua; //Putzua
+    public String haizegailua; //Haizegailua
+    public String berogailua; //Berogailua
+    public String kargatzen; //Kargatzen
+    public String eskuma; //Eskuina
+    public String erdia; //Erdia
+    public String ezkerra; //Ezkerra
+    public String ezabatuEsaldia; //Ezabatu
+    public String aukeratu; //Aukeratu
+    public String hiruGehienez; //Hiru gehienez
+    public String izena; //Izena
+    public String pasahitza; //Pasahitza
+    public String irten; //Irten
+    public String minimizatu; //Minimizatu
+    public String maximizatu; //Maximizatu
+    public String hizkuntzak; //Hizkuntzak
+    public String hasiSaioa;
+    public String hasierakoTamaina;
 
     //KONSTRUKTOREA
     public Hizkuntza()
     {
-      balioZerrenda = new ArrayList<>();
-      balioZerrenda.add(null); 
-      balioZerrenda.add(null); 
-      balioZerrenda.add(null); 
+    	
     }
-    
-    //GET-AK
-    public ArrayList<String> getBalioZerrenda() //Balio Zerrenda
-    {
-        return balioZerrenda;
-    }
-    
-    public String getPasahitza() //Pasahitza
-    {
-        return pasahitza;
-    }
-    
-    public String getIzena() //Izena
-	{
-		return izena;
-	}
-
-    //SET-AK
-    public void setBalioZerrendaAtIndex(int index, String value) //Balio Zerrenda
-    {
-    	balioZerrenda.set(index,value); 
-    }
-
-	public void setPasahitza(String pasahitza) //Pasahitza
-	{
-		this.pasahitza = pasahitza;
-	}
-
-	public void setIzena(String izena) //Izena
-	{
-		this.izena = izena;
-	}		
 }
