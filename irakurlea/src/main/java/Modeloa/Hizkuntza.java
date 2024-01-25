@@ -9,9 +9,9 @@ public class Hizkuntza extends DatuakGordePlantilla
     public String deleteButtom; //Ezabatu botoia
     public String confirmButtom; //Konfirmatu botoia
     public String aukerak; //Aukerak
-    public String putzua; //Putzua
-    public String haizegailua; //Haizegailua
-    public String berogailua; //Berogailua
+    public String urmaila; //Ur Maila
+    public String tenperatura; //Tenperatura
+    public String gasa; //Gasa
     public String kargatzen; //Kargatzen
     public String eskuma; //Eskuina
     public String erdia; //Erdia
@@ -25,8 +25,11 @@ public class Hizkuntza extends DatuakGordePlantilla
     public String minimizatu; //Minimizatu
     public String maximizatu; //Maximizatu
     public String hizkuntzak; //Hizkuntzak
-    public String hasiSaioa;
-    public String hasierakoTamaina;
+    public String hasiSaioa; //Hasi Saioa
+    public String hasierakoTamaina; //Hasierako tamaina
+    public String gasIsurketa; //Gas Isurketa
+    public String alerta; //Alerta
+    public String onartu; //Onartu
 
     //KONSTRUKTOREA
     public Hizkuntza()

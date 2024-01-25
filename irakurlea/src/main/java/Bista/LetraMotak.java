@@ -7,7 +7,8 @@ public class LetraMotak
 {
 	//FONT
 	public final static Font KARGATZEN = new Font("SansSerif", Font.BOLD, 40);
-	public final static Font MQTT = new Font("SansSerif", Font.BOLD, 70);
+	public final static Font MQTT = new Font("SansSerif", Font.BOLD, 65);
+	public final static Font MQTT2 = new Font("SansSerif", Font.BOLD, 55);
 	public final static Font LOGINLETRAK = new Font("Segoe UI", Font.BOLD, 40);
 	public final static Font HASISAIOA = new Font("Segoe UI", Font.BOLD, 30);
 	public final static Font LOGINTITULUA = new Font("Arial", Font.BOLD, 98);

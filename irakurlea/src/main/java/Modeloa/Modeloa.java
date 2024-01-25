@@ -4,6 +4,10 @@ import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
 import java.util.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -15,18 +19,17 @@ public class Modeloa implements ActionListener
 	private Printzipala irudia; //Bista
 	
 	//PROPIETATEAK (STRING)
-	public final static String PROPIETATEA = "putzua"; //Putzua aukeratu da
-	public final static String PROPIETATEA2 = "haizegailua"; //Haizegailua aukeratu da
-	public final static String PROPIETATEA3 = "berogailua"; //Berogailua aukeratu da
+	public final static String PROPIETATEA = "urmaila"; //Ur Maila aukeratu da
+	public final static String PROPIETATEA2 = "tenperatura"; //Tenperatura aukeratu da
+	public final static String PROPIETATEA3 = "gasa"; //Gasa aukeratu da
 	public final static String PROPIETATEA4 = "denboraPasaDa"; //Pantaila aktualizatzen da
 	public final static String PROPIETATEA5 = "ezk"; //Ezkerreko botoia aukeratu da
 	public final static String PROPIETATEA6 = "erd"; //Erdiko botoia aukeratu da
 	public final static String PROPIETATEA7 = "esk"; //Eskuineko botoia aukeratu da
 	public final static String PROPIETATEA8 = "berdeaTimer"; //Konfirmatu botoiak parpadeatzeko
-	public final static String PROPIETATEA9 = "eliminar3Timer";
-	public final static String PROPIETATEA10 = "eliminarTimer";
-	public final static String PROPIETATEA11 = "eliminar2Timer";
-	public final static String PROPIETATEA12 = "eliminar4Timer"; //Login pantailan hizkuntzak aldatzean pantaila aldaketa ez ikusteko
+	public final static String PROPIETATEA9 = "eliminar3Timer"; //Hasi Saioa botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	public final static String PROPIETATEA10 = "eliminarTimer"; //Gehitu botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	public final static String PROPIETATEA11 = "eliminar2Timer"; //Gehitu botoiari ematean, wait pantailaren arteko aldaketak ez ikusteko
 	
 	//MAPAK
 	private Map<String, Erabiltzailea> erabiltzaileak; //Erabiltzaileen Mapa
@@ -35,9 +38,12 @@ public class Modeloa implements ActionListener
 	//TIMER-AK	
 	public Timer timer=null; //Pantaila aktualizatzeko timer-a
 	public Timer timer2 = null; //Konfirmatu Botoiaren parpadeo berdea
-	public Timer timer3 = null; //
-	public Timer timer4 = null; //
-	public Timer timer5 = null; //
+	public Timer timer3 = null; //Gehitu botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	public Timer timer4 = null; //Gehitu botoiari ematean, wait pantailaren arteko aldaketak ez ikusteko
+	public Timer timer5 = null; //Hasi Saioa botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	
+	//CLIPAK
+	public Clip clip;
 	
 	//PROPERTY CHANGE
 	private PropertyChangeSupport konektorea; //Konektorea
@@ -52,12 +58,12 @@ public class Modeloa implements ActionListener
 	    timer.setActionCommand("Denbora"); //Pantaila aktualizatzeko timer-a
 	    timer2 = new Timer(500, this); //Konfirmatu Botoiaren parpadeo berdea
 	    timer2.setActionCommand("Denbora2"); //Konfirmatu Botoiaren parpadeo berdea
-	    timer3 = new Timer(1000, this);
-	    timer3.setActionCommand("Denbora4");
-	    timer4 = new Timer(1000, this);
-	    timer4.setActionCommand("Denbora5");
-	    timer5 = new Timer(500, this);
-	    timer5.setActionCommand("Denbora3");
+	    timer3 = new Timer(1000, this); //Gehitu botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	    timer3.setActionCommand("Denbora4"); //Gehitu botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	    timer4 = new Timer(1000, this); //Gehitu botoiari ematean, wait pantailaren arteko aldaketak ez ikusteko
+	    timer4.setActionCommand("Denbora5"); //Gehitu botoiari ematean, wait pantailaren arteko aldaketak ez ikusteko
+	    timer5 = new Timer(500, this); //Hasi Saioa botoiari ematean, pantailen arteko aldaketak ez ikusteko
+	    timer5.setActionCommand("Denbora3"); //Hasi Saioa botoiari ematean, pantailen arteko aldaketak ez ikusteko
 	    
 	    erabiltzaileak = new HashMap<>(); //Erabiltzaileen Mapa
 	    hizkuntzak = new HashMap<>(); //Hizkuntzen mapa
@@ -135,13 +141,13 @@ public class Modeloa implements ActionListener
 			            hizkuntza.aukerak = datua5; //Datua gorde
 			            
 			            String datua6 = partes[5].trim(); //Datua irakurri
-			            hizkuntza.putzua = datua6; //Datua gorde	 
+			            hizkuntza.urmaila = datua6; //Datua gorde	 
 			            
 			            String datua7 = partes[6].trim(); //Datua irakurri
-			            hizkuntza.haizegailua = datua7; //Datua gorde
+			            hizkuntza.tenperatura = datua7; //Datua gorde
 			            
 			            String datua8 = partes[7].trim(); //Datua irakurri
-			            hizkuntza.berogailua = datua8; //Datua gorde
+			            hizkuntza.gasa = datua8; //Datua gorde
 			            
 			            String datua9 = partes[8].trim(); //Datua irakurri
 			            hizkuntza.kargatzen = datua9; //Datua gorde
@@ -187,6 +193,15 @@ public class Modeloa implements ActionListener
 			            
 			            String datua23 = partes[22].trim(); //Datua irakurri
 			            hizkuntza.hasierakoTamaina = datua23; //Datua gorde
+			            
+			            String datua24 = partes[23].trim(); //Datua irakurri
+			            hizkuntza.gasIsurketa = datua24; //Datua gorde
+			            
+			            String datua25 = partes[24].trim(); //Datua irakurri
+			            hizkuntza.alerta = datua25; //Datua gorde
+			            
+			            String datua26 = partes[25].trim(); //Datua irakurri
+			            hizkuntza.onartu = datua26; //Datua gorde
 			        }
 			    } 
 			    catch (IOException e) //Exception
@@ -204,21 +219,21 @@ public class Modeloa implements ActionListener
 	//ERABILTZAILE HORREN PASAHITZA HORI DEN EDO EZ ESATEN DU
 	public boolean isUsuarioContraseña(String nombre, String contrasena) 
 	{
-		irudia.erabiltzailea = getErabiltzailea(nombre);
+		irudia.erabiltzailea = getErabiltzailea(nombre); //Erabiltzailea aukeratu
 
-	    if (irudia.erabiltzailea != null) 
+	    if (irudia.erabiltzailea != null) //Erabiltzailea ez baldin bada 
 	    {
-	        return contrasena.equals(irudia.erabiltzailea.getPasahitza());
+	        return contrasena.equals(irudia.erabiltzailea.getPasahitza());  //Erabiltzaile horren izena eta pasahitza zuzenak baldin badira TRUE
 	    }
 
-	    return false;
+	    return false; //FALSE BUELTATZEN DU
 	}
 	
 	//ARGELIAKO BABES ETXEAN CLICK EGITEAN...
 	public void argeliaBABESETXEclick()
 	{		
 		irudia.izena = "argelia"; //Erabiltzailearen izena aldatu
-		irudia.erabiltzailea = getErabiltzailea("argelia");
+		irudia.erabiltzailea = getErabiltzailea("argelia"); //Argelia erabiltzaile hartzen du
 		
 		irudia.erabiltzailea = getErabiltzailea(irudia.izena); //Erabiltzailearen datuak hartzen ditu  
     	
@@ -232,14 +247,14 @@ public class Modeloa implements ActionListener
     	}  
 		
 		irudia.adminFrame.dispose(); //Maparen pantaila itxi egiten du
-        irudia.adminMapa = 1;
+        irudia.adminMapa = 1; //Admin mapa 1 da
 	}
 	
 	//SUECIAKO BABES ETXEAN CLICK EGITEAN...
 	public void sueciaBABESETXEclick()
 	{		
 		irudia.izena = "suecia"; //Erabiltzailearen izena aldatu
-		irudia.erabiltzailea = getErabiltzailea("suecia");
+		irudia.erabiltzailea = getErabiltzailea("suecia"); //Suecia erabiltzaile hartzen du
 		if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
     	{          		                
     		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
@@ -249,14 +264,14 @@ public class Modeloa implements ActionListener
     		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
     	}  
 		irudia.adminFrame.dispose(); //Maparen pantaila itxi egiten du
-    	irudia.adminMapa = 1;
+    	irudia.adminMapa = 1; //Admin mapa 1 da
 	}		
 	
 	//LIBIAKO BABES ETXEAN CLICK EGITEAN...
 		public void libiaBABESETXEclick()
 		{		
 			irudia.izena = "libia"; //Erabiltzailearen izena aldatu
-			irudia.erabiltzailea = getErabiltzailea("libia");
+			irudia.erabiltzailea = getErabiltzailea("libia"); //Libia erabiltzaile hartzen du
 			if(irudia.erabiltzailea.behin==0) //Erabiltzailea jartzen den lehenengo aldia baldin bada
 	    	{          		                
 	    		irudia.mostrarPantallaHuecos(); //Hutsuneen pantaila jarri
@@ -266,7 +281,7 @@ public class Modeloa implements ActionListener
 	    		irudia.mostrarPantallaHuecosCompletado(irudia.erabiltzailea); //Erabiltzailearen datuekin pantaila erakutzi
 	    	}  
 			irudia.adminFrame.dispose(); //Maparen pantaila itxi egiten du
-	    	irudia.adminMapa = 1;
+	    	irudia.adminMapa = 1; //Admin mapa 1 da
 		}
 	
 	//LOGIN PANTAILAN IZENAREN TOKIAN JARRITAKOAREN ARABERA...
@@ -280,6 +295,7 @@ public class Modeloa implements ActionListener
             if (("admin".equals(irudia.izena)) && ("admin".equals(contrasena))) //Admin Admin jartzean maparen pantaila zabaltzen du
             {                 	
             	irudia.erabiltzailea = getErabiltzailea(irudia.izena);
+            	
                 irudia.mostrarPantallaAdmin(); //Admin pantaila irekitzen da, mapa ageri dena
                 irudia.loginPANTAILA.dispose(); //Login pantaila itxi egiten du
             } 
@@ -302,15 +318,11 @@ public class Modeloa implements ActionListener
             {           	
                 irudia.ludokLovesU(); //Easter egg
                 irudia.loginPANTAILA.dispose(); //Login pantaila itxi egiten du
-                //timerEliminar3.setRepeats(false);
-    	    	//timerEliminar3.start();
             }
             else 
             {
                 JOptionPane.showMessageDialog(null, "Pasahitza ez da zuzena"); //Pasahitza ez baldin baduzu asmatzen
             }
-            //timerEliminar3.setRepeats(false);
-	    	//timerEliminar3.start();
         } 
 		else
         {
@@ -321,36 +333,37 @@ public class Modeloa implements ActionListener
 	//IZENA ETA PASAHITZA KASILLAK EA BETETA DAUDEN BEGIRATZEN DU
     public boolean autenticar(String nombre, String contrasena) 
     {
-        return nombre != null && !nombre.isEmpty() && contrasena != null && !contrasena.isEmpty();
+        return nombre != null && !nombre.isEmpty() && contrasena != null && !contrasena.isEmpty(); //Izena eta pasahitza ea beteta daudem
     }
     
-    //GET-AK
+    //GET ERABILTZAILEA
     public Erabiltzailea getErabiltzailea(String nombre) 
 	{
-	    return erabiltzaileak.get(nombre);
+	    return erabiltzaileak.get(nombre); //Erabiltzaile bat lortu
 	}
     
+    //GET HIZKUNTZA
     public Hizkuntza getHizkuntza(String nombre) 
 	{
-	    return hizkuntzak.get(nombre);
+	    return hizkuntzak.get(nombre); //Hizkuntza bat lortu
 	}
 	
     //EA ERABILTZAILEA EXISTITZEN DEN ESATEN DU
 	public boolean isUsuarioRegistrado(String nombre) 
 	{
-	    return erabiltzaileak.containsKey(nombre);
+	    return erabiltzaileak.containsKey(nombre); //Ea erabiltzailea existitzen den
 	}
     
 	//ADD PROPERTY CHANGE LISTENER
 	public void addPropertyChangeListener(PropertyChangeListener listener) 
 	{
-		konektorea.addPropertyChangeListener(listener);
+		konektorea.addPropertyChangeListener(listener); //Property Change Listener
 	}
 
 	//REMOVE PROPERTY CHANGE LISTENER
 	public void removePropertyChangeListener(PropertyChangeListener listener) 
 	{
-		konektorea.removePropertyChangeListener(listener);
+		konektorea.removePropertyChangeListener(listener); //Property Change Listener
 	}
 	
 	//PROPIETATEAK BISTARA BIDALTZEN DITU FIRE PROPERTY CHANGE ERABILIZ
@@ -358,34 +371,34 @@ public class Modeloa implements ActionListener
 	{
 		switch (mota) 
 		{
-			case "putzua": //Putzua aukera aukeratzen baldin bada
+			case "urmaila": //Ur Maila aukera aukeratzen baldin bada
 			{
-				konektorea.firePropertyChange(PROPIETATEA, null, posizioa);
+				konektorea.firePropertyChange(PROPIETATEA, null, posizioa); //Bistara bidali
 				break;
 			}
-			case "haizegailua": //Haizegailu aukera aukeratzen baldin bada
+			case "tenperatura": //Tenperatura aukera aukeratzen baldin bada
 			{
-				konektorea.firePropertyChange(PROPIETATEA2, null, posizioa);
+				konektorea.firePropertyChange(PROPIETATEA2, null, posizioa); //Bistara bidali
 				break;
 			}
-			case "berogailua": //Berogailu aukera aukeratzen baldin bada
+			case "gasa": //Gasa aukera aukeratzen baldin bada
 			{
-				konektorea.firePropertyChange(PROPIETATEA3, null, posizioa);
+				konektorea.firePropertyChange(PROPIETATEA3, null, posizioa); //Bistara bidali
 				break;
 			}
 			case "ezk": //Ezkerreko botoia ezabatu
 			{
-				konektorea.firePropertyChange(PROPIETATEA5, null, posizioa);
+				konektorea.firePropertyChange(PROPIETATEA5, null, posizioa); //Bistara bidali
 				break;
 			}
 			case "erd": //Erdiko botoia ezabatu 
 			{
-				konektorea.firePropertyChange(PROPIETATEA6, null, posizioa);
+				konektorea.firePropertyChange(PROPIETATEA6, null, posizioa); //Bistara bidali
 				break;
 			}
 			case "esk": //Eskuineko botoia ezabatu 
 			{
-				konektorea.firePropertyChange(PROPIETATEA7, null, posizioa);
+				konektorea.firePropertyChange(PROPIETATEA7, null, posizioa); //Bistara bidali
 				break;
 			}
 		}
@@ -400,20 +413,43 @@ public class Modeloa implements ActionListener
 		switch(command) 
 		{
 	        case "Denbora": //Pantaila aktualizatzeko timer-a
-	            konektorea.firePropertyChange(PROPIETATEA4, 0, 1);
+	            konektorea.firePropertyChange(PROPIETATEA4, 0, 1); //Bistara bidali
 	            break;      
 	        case "Denbora2": //Konfirmatu Botoiaren parpadeo berdea
-	            konektorea.firePropertyChange(PROPIETATEA8, 0, 1);
+	            konektorea.firePropertyChange(PROPIETATEA8, 0, 1); //Bistara bidali
 	            break;
 	        case "Denbora3": //Pantaila batetik bestera dagoen denbora luzatzeko
-	            konektorea.firePropertyChange(PROPIETATEA9, 0, 1);
+	            konektorea.firePropertyChange(PROPIETATEA9, 0, 1); //Bistara bidali
 	            break;
 	        case "Denbora4": //Pantaila batetik bestera dagoen denbora luzatzeko
-	            konektorea.firePropertyChange(PROPIETATEA10, 0, 1);
+	            konektorea.firePropertyChange(PROPIETATEA10, 0, 1); //Bistara bidali
 	            break;
 	        case "Denbora5": //Pantaila batetik bestera dagoen denbora luzatzeko
-	            konektorea.firePropertyChange(PROPIETATEA11, 0, 1);
+	            konektorea.firePropertyChange(PROPIETATEA11, 0, 1); //Bistara bidali
 	            break;
 		}
 	}
+	
+	//SOINUA JARRI
+	public void reproducirSonido(String nombreArchivo) 
+	{
+        try 
+        {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(nombreArchivo).getAbsoluteFile()); //Helbidetik artxiboa hartzen du
+            
+            if (clip != null && clip.isRunning()) //Soinua martxan baldin badago ez da berriro asiko bukatu arte
+            {
+                System.out.println("JADA SOINUA MARTXAN DAGO");
+                return; //Itzuli
+            }
+
+            clip = AudioSystem.getClip(); //Soinua hartu
+            clip.open(audioInputStream); //Soinua ireki
+            clip.start(); //Soinua martxan jarri
+        } 
+        catch (Exception ex) //Excepzioa
+        {
+            System.out.println("ERROREA SOINUA ZABALTZEAN: " + ex.getMessage()); //Soinua irekitzean errorea
+        }
+    }
 }
